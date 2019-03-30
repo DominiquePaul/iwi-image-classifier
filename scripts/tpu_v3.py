@@ -6,7 +6,6 @@ from datetime import datetime
 
 from io import BytesIO 
 from tensorflow.python.lib.io import file_io
-
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten, BatchNormalization
 from tensorflow.python.keras import backend as K
@@ -72,8 +71,7 @@ class cnn_model:
         if bool(name):
             self.name = name
         else:
-            self.name = "conv_size_{}_filters_{}_dense_{}_dropout_" +\
-                "dense_{}_lr_{}_act_{}".format(self.conv_layers, self.conv_filters, 
+            self.name = "conv_size_{}_filters_{}_dense_{}_dropout_{}_dense_{}_lr_{}_act_{}".format(self.conv_layers, self.conv_filters, 
                                               self.dense_layers, self.dropout_rate_dense, 
                                               self.learning_rate, self.activation_fn)
         
@@ -126,7 +124,7 @@ class cnn_model:
                  strides=self.pool_stride))
         model.add(BatchNormalization())
 
-        for i in range(self.conv_layers-1):
+        for _ in range(self.conv_layers-1):
             model.add(Conv2D(filters=self.conv_filters,
                              kernel_size=self.kernel_size,
                              activation=self.activation_fn,
@@ -193,17 +191,19 @@ class cnn_model:
                        verbose=verbose, callbacks=callbacks, validation_data=(self.x_val, self.y_val))
 
     def train_on_tpu(self, epochs, batch_size, learning_rate, optimizer, loss, callbacks):
-        tpu_model = tf.contrib.tpu.keras_to_tpu_model(self.model, strategy=tf.contrib.tpu.TPUDistributionStrategy(tf.contrib.cluster_resolver.TPUClusterResolver(self.tpu_instance_name)))
-        tpu_model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=1e-3, ), loss=tf.keras.losses.sparse_categorical_crossentropy, metrics=['sparse_categorical_accuracy', f1_score])
+        self.model = tf.contrib.tpu.keras_to_tpu_model(self.model, strategy=tf.contrib.tpu.TPUDistributionStrategy(tf.contrib.cluster_resolver.TPUClusterResolver(self.tpu_instance_name)))
+        self.model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=1e-3, ), loss=tf.keras.losses.sparse_categorical_crossentropy, metrics=['sparse_categorical_accuracy', f1_score])
 
         # has to be optimised to really train a epoch with full data
-        self.hist = tpu_model.fit_generator(
+        self.hist = self.model.fit_generator(
             self.train_gen(batch_size),
             epochs=epochs,
             steps_per_epoch=10, # still have to change this
             validation_data=(self.x_val, self.y_val),
             callbacks=callbacks
             )
+        
+        self.model = self.model.sync_to_cpu()
 
     def train_gen(self, batch_size):
         """
@@ -216,58 +216,61 @@ class cnn_model:
             yield self.x_train[offset:offset+batch_size], self.y_train[offset:offset + batch_size]
 
     def predict(self, x_data):
-        cpu_model = self.model.sync_to_cpu()
-        predictions = cpu_model.predict(x_data)
+        predictions = self.model.predict(x_data)
         return predictions
+
+    def predict_classes(self,x_data):
+        predicted_classes = self.model.predict_classes(x_data)
+        return(predicted_classes)
 
 
     def save_model(self, folder_path="./", name=None):
         if bool(name) == False:
             name = self.name
+            
         file_path = os.path.join(folder_path, name + ".HDF5")
         tf.keras.models.save_model(self.model,
                                    file_path,
                                    overwrite=True,
-                                   include_optimizer=True)
+                                   include_optimizer=False) # we dont need the optimizer as we only finished ready models
         print("Model: {} was saved".format(name))
 
     def load_model(self, file_path):
-        self.model = tf.keras.models.load_model(file_path,
-                                                 compile=True)
+        self.model = tf.keras.models.load_model(file_path, compile=False)
         print("Model loaded successfully")
 
+if __name__ == "__main__":
 
-config_v1 = {    
-    "conv_layers": 4,
-    "conv_filters": 128,
-    "dense_layers": 5,
-    "dense_neurons": 20,
-    "dropout_rate_dense": 0.2,
-    "learning_rate": 1e-04,
-    "activation_fn": "relu"
-}
+    config_v1 = {    
+        "conv_layers": 4,
+        "conv_filters": 128,
+        "dense_layers": 5,
+        "dense_neurons": 20,
+        "dropout_rate_dense": 0.2,
+        "learning_rate": 1e-04,
+        "activation_fn": "relu"
+    }
 
-# offline
-x_train = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/1-OwnNetwork/np_array_files/x_train.npy"
-y_train = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/1-OwnNetwork/np_array_files/class_labels_train.npy"
-# online
-x_train_url = 'gs://data-imr-unisg/np_array_files/x_train.npy'
-y_train_url = 'gs://data-imr-unisg/np_array_files/class_labels_trainp.npy'
+    # offline
+    x_train = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/1-OwnNetwork/np_array_files/x_train.npy"
+    y_train = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/1-OwnNetwork/np_array_files/class_labels_train.npy"
+    # online
+    x_train_url = 'gs://data-imr-unisg/np_array_files/x_train.npy'
+    y_train_url = 'gs://data-imr-unisg/np_array_files/class_labels_trainp.npy'
 
-# model
-print("New Model")
-m1 = cnn_model()
-m1.new_model(x_train_url, y_train_url, 2, config_v1)
-print("Train model...")
-m1.train(epochs=2, batch_size=256,on_tpu=True)
-print("Save Model")
-m1.save_model(name="my_model")
+    # model
+    print("New Model")
+    m1 = cnn_model()
+    m1.new_model(x_train_url, y_train_url, 2, config_v1)
+    print("Train model...")
+    m1.train(epochs=2, batch_size=256,on_tpu=True)
+    print("Save Model")
+    m1.save_model(name="my_model")
 
-print("New Model 2")
-m2 = cnn_model()
-print("Load model 2")
-m2.load_model("./my_model.HDF5")
-
+    print("New Model 2")
+    m2 = cnn_model()
+    print("Load model 2")
+    m2.load_model("my_model.HDF5")
 
 
 
