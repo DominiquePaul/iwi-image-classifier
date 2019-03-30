@@ -72,7 +72,7 @@ class cnn_model:
             self.name = name
         else:
             self.name = "conv_size_{}_filters_{}_dense_{}_dropout_{}_dense_{}_lr_{}_act_{}".format(self.conv_layers, self.conv_filters, 
-                                              self.dense_layers, self.dropout_rate_dense, 
+                                              self.dense_layers, self.dropout_rate_dense, self.dense_layers, 
                                               self.learning_rate, self.activation_fn)
         
         self.x_train, self.x_val, self.y_train, self.y_val = self.load_data(x_data, y_data)
