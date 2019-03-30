@@ -1,157 +1,0 @@
-  File "tpu_v3.py", line 276
-    mport tensorflow as tf
-                   ^
-SyntaxError: invalid syntax
-2019-03-30 09:50:51.311914: W tensorflow/core/distributed_runtime/rpc/grpc_session.cc:349] GrpcSession::ListDevices will initialize the session with an empty graph and other defaults because the session has not yet been created.
-/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/sklearn/model_selection/_split.py:2179: FutureWarning: From version 0.21, test_size will always complement train_size unless both are specified.
-  FutureWarning)
-WARNING:tensorflow:tpu_model (from tensorflow.contrib.tpu.python.tpu.keras_support) is experimental and may change or be removed at any time, and without warning.
-New Model
-Train model...
-Epoch 1/2
- 1/10 [==>...........................] - ETA: 15:17 - loss: 0.7992 - sparse_categorical_accuracy: 0.3516 - f1_score: 0.8571 2/10 [=====>........................] - ETA: 6:56 - loss: 0.8618 - sparse_categorical_accuracy: 0.3926 - f1_score: 0.8559  3/10 [========>.....................] - ETA: 4:07 - loss: 0.9121 - sparse_categorical_accuracy: 0.3776 - f1_score: 0.8563 4/10 [===========>..................] - ETA: 2:42 - loss: 0.8879 - sparse_categorical_accuracy: 0.3906 - f1_score: 0.8584 5/10 [==============>...............] - ETA: 1:50 - loss: 0.8648 - sparse_categorical_accuracy: 0.3992 - f1_score: 0.8582 6/10 [=================>............] - ETA: 1:14 - loss: 0.8536 - sparse_categorical_accuracy: 0.4102 - f1_score: 0.8597 7/10 [====================>.........] - ETA: 48s - loss: 0.8347 - sparse_categorical_accuracy: 0.4291 - f1_score: 0.8575  8/10 [=======================>......] - ETA: 29s - loss: 0.8233 - sparse_categorical_accuracy: 0.4497 - f1_score: 0.8552 9/10 [==========================>...] - ETA: 13s - loss: 0.8118 - sparse_categorical_accuracy: 0.4661 - f1_score: 0.853410/10 [==============================] - 178s 18s/step - loss: 0.7986 - sparse_categorical_accuracy: 0.4816 - f1_score: 0.8527 - val_loss: 11.1396 - val_sparse_categorical_accuracy: 0.2708 - val_f1_score: 0.8406
-Epoch 2/2
- 1/10 [==>...........................] - ETA: 18s - loss: 0.7082 - sparse_categorical_accuracy: 0.6641 - f1_score: 0.8698 2/10 [=====>........................] - ETA: 16s - loss: 0.7083 - sparse_categorical_accuracy: 0.6445 - f1_score: 0.8710 3/10 [========>.....................] - ETA: 14s - loss: 0.6976 - sparse_categorical_accuracy: 0.6484 - f1_score: 0.8664 4/10 [===========>..................] - ETA: 12s - loss: 0.6941 - sparse_categorical_accuracy: 0.6514 - f1_score: 0.8641 5/10 [==============>...............] - ETA: 10s - loss: 0.6942 - sparse_categorical_accuracy: 0.6586 - f1_score: 0.8627 6/10 [=================>............] - ETA: 7s - loss: 0.6887 - sparse_categorical_accuracy: 0.6589 - f1_score: 0.8630  7/10 [====================>.........] - ETA: 6s - loss: 0.6811 - sparse_categorical_accuracy: 0.6624 - f1_score: 0.8626 8/10 [=======================>......] - ETA: 3s - loss: 0.6757 - sparse_categorical_accuracy: 0.6616 - f1_score: 0.8599 9/10 [==========================>...] - ETA: 1s - loss: 0.6667 - sparse_categorical_accuracy: 0.6632 - f1_score: 0.858810/10 [==============================] - 22s 2s/step - loss: 0.6617 - sparse_categorical_accuracy: 0.6656 - f1_score: 0.8584 - val_loss: 2.7783 - val_sparse_categorical_accuracy: 0.3792 - val_f1_score: 0.8406
-Save Model
-Traceback (most recent call last):
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 1334, in _do_call
-    return fn(*args)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 1319, in _run_fn
-    options, feed_dict, fetch_list, target_list, run_metadata)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 1407, in _call_tf_sessionrun
-    run_metadata)
-tensorflow.python.framework.errors_impl.InvalidArgumentError: In ReadVariableOp the following variables were found uninitialized: conv2d/bias, conv2d/kernel
-	 [[{{node ReadVariables_12478298743870153107/_1}}]]
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "tpu_v3.py", line 264, in <module>
-    m1.save_model(name="my_model")
-  File "tpu_v3.py", line 231, in save_model
-    include_optimizer=True)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/keras/engine/saving.py", line 107, in save_model
-    save_weights_to_hdf5_group(model_weights_group, model_layers)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/keras/engine/saving.py", line 728, in save_weights_to_hdf5_group
-    weight_values = K.batch_get_value(symbolic_weights)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/keras/backend.py", line 2725, in batch_get_value
-    return get_session().run(tensors)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 929, in run
-    run_metadata_ptr)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 1152, in _run
-    feed_dict_tensor, options, run_metadata)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 1328, in _do_run
-    run_metadata)
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 1348, in _do_call
-    raise type(e)(node_def, op, message)
-tensorflow.python.framework.errors_impl.InvalidArgumentError: In ReadVariableOp the following variables were found uninitialized: conv2d/bias, conv2d/kernel
-	 [[{{node ReadVariables_12478298743870153107/_1}}]]
-Exception ignored in: <bound method BaseSession.__del__ of <tensorflow.python.client.session.Session object at 0x7fd494e02860>>
-Traceback (most recent call last):
-  File "/home/dominique_c_a_paul/yes/lib/python3.6/site-packages/tensorflow/python/client/session.py", line 738, in __del__
-TypeError: 'NoneType' object is not callable
-[I 09:56:49.774 NotebookApp] Writing notebook server cookie secret to /run/user/1000/jupyter/notebook_cookie_secret
-[W 09:56:49.997 NotebookApp] WARNING: The notebook server is listening on all IP addresses and not using encryption. This is not recommended.
-[I 09:56:50.007 NotebookApp] Serving notebooks from local directory: /home/dominique_c_a_paul
-[I 09:56:50.007 NotebookApp] 0 active kernels
-[I 09:56:50.007 NotebookApp] The Jupyter Notebook is running at:
-[I 09:56:50.007 NotebookApp] http://hsg-iwi-imr2:8080/
-[I 09:56:50.007 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-[W 09:56:55.060 NotebookApp] Clearing invalid/expired login cookie username-35-222-19-23-8080
-[W 09:56:55.062 NotebookApp] Clearing invalid/expired login cookie username-35-222-19-23-8080
-[I 09:56:55.062 NotebookApp] 302 GET /tree? (37.120.72.201) 3.19ms
-[W 09:56:55.177 NotebookApp] Clearing invalid/expired login cookie username-35-222-19-23-8080
-[W 09:56:55.177 NotebookApp] Clearing invalid/expired login cookie username-35-222-19-23-8080
-[I 09:56:55.178 NotebookApp] 302 GET /tree? (37.120.72.201) 1.39ms
-[I 09:56:59.144 NotebookApp] 302 POST /login?next=%2Ftree%3F (37.120.72.201) 1.29ms
-[I 09:57:11.633 NotebookApp] Creating new directory in 
-[W 09:57:53.845 NotebookApp] delete /logs
-[W 09:57:59.573 NotebookApp] delete /2019-03-15T16:28:21.326389
-[W 09:57:59.601 NotebookApp] delete /2019-03-15T18:13:12.843166
-[W 09:58:04.908 NotebookApp] delete /model5
-[I 09:58:20.006 NotebookApp] Creating new notebook in /JupyterNotebooks
-[I 09:58:22.254 NotebookApp] Kernel started: 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 09:58:22.818 NotebookApp] Adapting to protocol v5.1 for kernel 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-2019-03-30 09:59:47.067613: W tensorflow/core/distributed_runtime/rpc/grpc_session.cc:349] GrpcSession::ListDevices will initialize the session with an empty graph and other defaults because the session has not yet been created.
-[I 10:00:22.590 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:02:23.608 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:04:23.851 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:06:19.661 NotebookApp] Kernel started: 1ceb16cb-8d9b-46bb-88a9-b44a04089708
-[I 10:06:20.657 NotebookApp] Adapting to protocol v5.1 for kernel 1ceb16cb-8d9b-46bb-88a9-b44a04089708
-[I 10:06:23.813 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-2019-03-30 10:11:45.870586: W tensorflow/core/distributed_runtime/rpc/grpc_session.cc:349] GrpcSession::ListDevices will initialize the session with an empty graph and other defaults because the session has not yet been created.
-[I 10:12:23.236 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:14:23.450 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:16:22.916 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:18:23.028 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:20:23.705 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:22:23.015 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:24:22.742 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:28:23.159 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:30:23.154 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:32:22.808 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:34:22.813 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:42:23.072 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:43:46.520 NotebookApp] 302 GET / (181.191.200.220) 0.73ms
-[I 10:44:22.635 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:46:23.046 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[W 10:48:20.660 NotebookApp] WebSocket ping timeout after 119281 ms.
-[W 10:48:22.820 NotebookApp] WebSocket ping timeout after 119861 ms.
-[I 10:48:25.663 NotebookApp] Starting buffering for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 10:48:27.824 NotebookApp] Starting buffering for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 10:50:22.814 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:51:04.382 NotebookApp] Kernel interrupted: 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 10:51:22.705 NotebookApp] Kernel interrupted: 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 10:51:22.885 NotebookApp] Kernel interrupted: 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 10:51:25.237 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:52:02.780 NotebookApp] Kernel interrupted: 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 10:52:13.987 NotebookApp] Adapting to protocol v5.1 for kernel 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 10:52:13.988 NotebookApp] Restoring connection for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 10:52:23.494 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:54:23.066 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:56:23.104 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 10:57:13.548 NotebookApp] Adapting to protocol v5.1 for kernel 1ceb16cb-8d9b-46bb-88a9-b44a04089708
-[I 10:57:13.549 NotebookApp] Restoring connection for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 10:58:23.378 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 11:04:23.936 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 11:06:22.917 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[W 11:33:43.551 NotebookApp] WebSocket ping timeout after 119849 ms.
-[W 11:33:43.989 NotebookApp] WebSocket ping timeout after 119867 ms.
-[I 11:33:48.557 NotebookApp] Starting buffering for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 11:33:48.992 NotebookApp] Starting buffering for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 11:42:34.168 NotebookApp] Adapting to protocol v5.1 for kernel 1ceb16cb-8d9b-46bb-88a9-b44a04089708
-[I 11:42:34.170 NotebookApp] Restoring connection for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 11:42:34.444 NotebookApp] Adapting to protocol v5.1 for kernel 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 11:42:34.444 NotebookApp] Restoring connection for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 11:57:47.708 NotebookApp] 302 GET / (83.66.109.90) 1.33ms
-[I 12:01:07.859 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:02:24.108 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[W 12:04:04.445 NotebookApp] WebSocket ping timeout after 119842 ms.
-[I 12:04:09.449 NotebookApp] Starting buffering for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[W 12:04:34.173 NotebookApp] WebSocket ping timeout after 119677 ms.
-[I 12:04:39.176 NotebookApp] Starting buffering for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 12:08:43.365 NotebookApp] Adapting to protocol v5.1 for kernel 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 12:08:43.366 NotebookApp] Restoring connection for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 12:08:58.965 NotebookApp] Starting buffering for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 12:09:02.317 NotebookApp] Kernel restarted: 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 12:09:04.412 NotebookApp] Adapting to protocol v5.1 for kernel 3a3b4d86-d1c6-4743-9fe8-db359a42cf03
-[I 12:09:04.413 NotebookApp] Restoring connection for 3a3b4d86-d1c6-4743-9fe8-db359a42cf03:d7c7d534653348f3910994d5ed08f34f
-[I 12:09:04.413 NotebookApp] Replaying 7 buffered messages
-2019-03-30 12:09:45.755826: W tensorflow/core/framework/allocator.cc:122] Allocation of 1464745984 exceeds 10% of system memory.
-2019-03-30 12:09:49.352047: W tensorflow/core/framework/allocator.cc:122] Allocation of 1464745984 exceeds 10% of system memory.
-[I 12:10:22.682 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-2019-03-30 12:10:39.548425: W tensorflow/core/framework/allocator.cc:122] Allocation of 1464745984 exceeds 10% of system memory.
-2019-03-30 12:10:41.704499: W tensorflow/core/framework/allocator.cc:122] Allocation of 1464745984 exceeds 10% of system memory.
-2019-03-30 12:11:27.078271: W tensorflow/core/framework/allocator.cc:122] Allocation of 1464745984 exceeds 10% of system memory.
-[I 12:12:24.129 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:13:25.456 NotebookApp] Adapting to protocol v5.1 for kernel 1ceb16cb-8d9b-46bb-88a9-b44a04089708
-[I 12:13:25.458 NotebookApp] Restoring connection for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 12:14:23.318 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:18:04.307 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:24:23.010 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:28:23.212 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:30:23.532 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:32:23.241 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:34:13.918 NotebookApp] Starting buffering for 1ceb16cb-8d9b-46bb-88a9-b44a04089708:354e98eb187a418580a27b1862026401
-[I 12:36:23.374 NotebookApp] Saving file at /JupyterNotebooks/TPU_v3.ipynb
-[I 12:43:40.670 NotebookApp] 302 GET / (179.228.120.252) 0.76ms

@@ -55,7 +55,7 @@ class Cnn_ensemble_model:
             os.makedirs(folder_name)
             for i in range(self.num_models):
                 model_file_path = os.path.join(folder_name, "ensemble_model_{}".format(i))
-                self.models[i].save_model(folder_path="", name=model_file_path)
+                self.models[i].save_model(folder_path="", file=model_file_path)
         print("All Models of the ensemble saved to folder {}".format(folder_name))
 
     def load_ensemble(self, folder_path):

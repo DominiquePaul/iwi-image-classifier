@@ -227,11 +227,11 @@ class cnn_model:
         return(predicted_classes)
 
 
-    def save_model(self, folder_path="./", file_path=None):
+    def save_model(self, folder_path="", file=None):
         if bool(file_path) == False:
-            name = self.name
+            file = self.name
         if bool(folder_path):
-            file_path = os.path.join(folder_path, name + ".HDF5")
+            file_path = os.path.join(folder_path, file + ".HDF5")
         tf.keras.models.save_model(self.model,
                                    file_path,
                                    overwrite=True,
