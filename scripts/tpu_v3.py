@@ -151,7 +151,7 @@ class cnn_model:
         
         return model
         
-    def train(self, epochs, batch_size, learning_rate=None, optimizer=None, loss=None, verbose=False, on_tpu=False):
+    def train(self, epochs, batch_size, tb_logs_dir=None,learning_rate=None, optimizer=None, loss=None, verbose=False, on_tpu=False):
         """
         trains the model.
 
@@ -164,17 +164,20 @@ class cnn_model:
             optimizer = self.optimizer 
         if loss is None:
             loss = self.loss 
-                  
-        date_time = datetime.now().strftime('%Y-%m-%d-%H%M%S')
-        log_name = "gs://data-imr-unisg/logs/{}_{}".format(self.name, date_time)
-        
-        # defining callbacks for training
-        tensorboard_callback = TensorBoard(log_dir=log_name,
-                                write_graph=True,
-                                write_images=True)
+
         early_stopping_callback = EarlyStopping(monitor="val_loss",
                                                 patience=5)
-        callbacks = [tensorboard_callback, early_stopping_callback]
+        callbacks = [early_stopping_callback]
+                  
+        if bool(tb_logs_dir):
+            date_time = datetime.now().strftime('%Y-%m-%d-%H%M%S')
+            log_name = os.path.join(tb_logs_dir, "{}_{}".format(self.name, date_time))
+            
+            # defining callbacks for training
+            tensorboard_callback = TensorBoard(log_dir=log_name,
+                                    write_graph=True,
+                                    write_images=True)
+            callbacks += [tensorboard_callback]
         
         # model has to be compiled differently when on tpu
         if on_tpu:
@@ -224,11 +227,11 @@ class cnn_model:
         return(predicted_classes)
 
 
-    def save_model(self, folder_path="./", name=None):
-        if bool(name) == False:
+    def save_model(self, folder_path="./", file_path=None):
+        if bool(file_path) == False:
             name = self.name
-            
-        file_path = os.path.join(folder_path, name + ".HDF5")
+        if bool(folder_path):
+            file_path = os.path.join(folder_path, name + ".HDF5")
         tf.keras.models.save_model(self.model,
                                    file_path,
                                    overwrite=True,
@@ -263,14 +266,16 @@ if __name__ == "__main__":
     m1 = cnn_model()
     m1.new_model(x_train_url, y_train_url, 2, config_v1)
     print("Train model...")
-    m1.train(epochs=2, batch_size=256,on_tpu=True)
+    m1.train(epochs=2, batch_size=256,on_tpu=True, tb_logs_dir="gs://data-imr-unisg/logs/")
     print("Save Model")
-    m1.save_model(name="my_model")
+    m1.save_model(file_path="my_model")
 
     print("New Model 2")
     m2 = cnn_model()
     print("Load model 2")
     m2.load_model("my_model.HDF5")
+
+    print("Everything worked")
 
 
 
