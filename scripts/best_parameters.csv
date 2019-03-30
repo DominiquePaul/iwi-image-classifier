@@ -1,0 +1,7 @@
+activation_fn,0
+conv_filters,36.0
+conv_layers,6.0
+dense_layers,2.0
+dense_neurons,39.0
+dropout_rate_dense,0.10086047048329616
+learning_rate,0.004146548302802594
