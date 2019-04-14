@@ -15,7 +15,7 @@ from timeit import default_timer as timer
 
 from tpu_v3 import cnn_model
 
-MAX_EVALS = 3
+MAX_EVALS = 30
 
 
 # offline
