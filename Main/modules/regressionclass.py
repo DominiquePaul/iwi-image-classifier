@@ -8,38 +8,10 @@ Created on Tue Jul 31 15:56:48 2018
 import statsmodels.api as sm
 import numpy as np
 import pandas as pd
-from sklearn import metrics
+from sklearn import metrics, linear_model
+from sklearn.preprocessing import StandardScaler
 
-class regression_class:
-
-    def __init__(self):
-        #self.dict = dict
-        self.trained_vars = None
-
-    def fit(self, x_train, y_train):
-        model = sm.OLS(x_train, y_train)
-        self.results = model.fit()
-        self.trained_vars = self.results.params
-
-    def reset(self):
-        self.trained_vars = None
-
-    def predict(self, x_test):
-        preds = self.results.predict(x_test)
-        return preds
-
-    def predict_v2(self, x_test):
-        results = np.matmul(x_test, np.transpose(self.trained_vars ))
-        results = np.squeeze(results)
-        results = np.round(results, 0)
-        return(results)
-
-    def evaluate(self, x_test, y_test):
-        predictions = self.predict(x_test)
-        accuracy = np.sum(np.equal(predictions,y_test)) / len(x_test)
-        return(np.round(accuracy,2))
-
-class logistic_regression_class:
+class Logistic_regression:
 
     def __init__(self):
         #self.dict = dict
@@ -48,8 +20,8 @@ class logistic_regression_class:
 
     def fit(self, x_train, y_train):
         model = sm.Logit(y_train,x_train)
-        self.results = model.fit()
-        self.trained_vars = self.results.params
+        self.model = model.fit()
+        self.trained_vars = self.model.params
 
     def all_decision_thresholds(self, x_feats, y_true):
         preds = self.predict(x_feats)
@@ -87,7 +59,7 @@ class logistic_regression_class:
         self.trained_vars = None
 
     def predict(self, x_test):
-        preds = self.results.predict(x_test)
+        preds = self.model.predict(x_test)
         return preds
 
     def predict_classes(self, x_test):
@@ -101,51 +73,35 @@ class logistic_regression_class:
         f1_metric = metrics.f1_score(y_test, predictions)
         return(np.round(accuracy,rounded_to), np.round(f1_metric,rounded_to))
 
+class Lasso_regression(Logistic_regression):
+
+    def fit(self, x_train, y_train):
+        self.scaler = StandardScaler()
+        self.scaler.fit(x_train)
+        x_train = self.scaler.transform(x_train)
+        self.model = linear_model.Lasso(alpha=0.1) # 0.1 chosen randomly
+        self.model.fit(x_train, y_train)
+        self.trained_vars = self.model.get_params()
+
+    def predict(self, x_test):
+        x_test = self.scaler.transform(x_test)
+        preds = self.model.predict(x_test)
+        return preds
+
+
 if __name__ == "__main__":
 
-	from sklearn.model_selection import train_test_split
+    from sklearn.model_selection import train_test_split
+    import pandas as pd
 
-	df = pd.read_csv("example.csv")
+    df = pd.read_csv("/Users/dominiquepaul/xBachelorArbeit/Daten/July Version/classwork/example.csv")
 
-	inputs = df.iloc[:,0:5]
-	outputs = df.iloc[:,5]
+    inputs = np.array(df.iloc[:,0:4])
+    outputs = np.array(df.iloc[:,5])
 
-	x_train, x_test, y_train, y_test = train_test_split(inputs, outputs, train_size = 0.7)
+    x_train, x_test, y_train, y_test = train_test_split(inputs, outputs, train_size = 0.7)
 
-	rc = regression_class()
-	rc.fit(x_train,y_train)
-	rc.predict(x_test)
-	rc.evaluate(x_test,y_test)
-
-
-
-
-
-
-
-
-
-
-"""
-df = pd.read_csv("/Users/dominiquepaul/Desktop/example.csv")
-df.head()
-
-xtrain = df.iloc[:7,0:5]
-xtrain.head()
-
-ytrain = df.iloc[:7,5]
-ytrain.head()
-
-xtest = df.iloc[7:,0:5]
-xtest.head()
-
-ytest = df.iloc[7:,5]
-ytest.head()
-
-
-rc = regression_class()
-rc.fit(xtrain,ytrain)
-rc.predict(xtest)
-
-
-"""
+    rc = Logistic_regression()
+    rc.fit(x_train,y_train)
+    rc.predict(x_train)
+    rc.evaluate(x_test,y_test)

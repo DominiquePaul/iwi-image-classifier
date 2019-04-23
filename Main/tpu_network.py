@@ -1,10 +1,16 @@
+"""
+to do:
+    - go through "train" functions and check whether all parameters are being used
+"""
+
+
 import tensorflow as tf
 import numpy as np
 import time
 import os
 from datetime import datetime
 
-from io import BytesIO 
+from io import BytesIO
 from tensorflow.python.lib.io import file_io
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten, BatchNormalization
@@ -12,31 +18,31 @@ from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.callbacks import TensorBoard, EarlyStopping
 from sklearn.model_selection import train_test_split
 
-def precision(y_true, y_pred):	
-    """Precision metric.	
+def precision(y_true, y_pred):
+    """Precision metric.
     Only computes a batch-wise average of precision. Computes the precision, a
     metric for multi-label classification of how many selected items are
     relevant.
-    """	
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))	
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))	
-    precision = true_positives / (predicted_positives + K.epsilon())	
+    """
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
     return precision
 
-def recall(y_true, y_pred):	
-    """Recall metric.	
+def recall(y_true, y_pred):
+    """Recall metric.
     Only computes a batch-wise average of recall. Computes the recall, a metric
-    for multi-label classification of how many relevant items are selected.	
-    """	
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))	
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))	
-    recall = true_positives / (possible_positives + K.epsilon())	
+    for multi-label classification of how many relevant items are selected.
+    """
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
     return recall
 
 def f1_score(y_true, y_pred):
     """Computes the F1 Score
     Only computes a batch-wise average of recall. Computes the recall, a metric
-    for multi-label classification of how many relevant items are selected.	
+    for multi-label classification of how many relevant items are selected.
     """
     p = precision(y_true, y_pred)
     r = recall(y_true, y_pred)
@@ -66,19 +72,19 @@ class cnn_model:
         self.dropout_rate_dense = config["dropout_rate_dense"]
         self.learning_rate = config["learning_rate"]
         self.activation_fn = config["activation_fn"]
-        
+
         # we give the model a name that describes its parameters
         if bool(name):
             self.name = name
         else:
-            self.name = "conv_size_{}_filters_{}_dense_{}_dropout_{}_dense_{}_lr_{}_act_{}".format(self.conv_layers, self.conv_filters, 
-                                              self.dense_layers, self.dropout_rate_dense, self.dense_layers, 
+            self.name = "conv_size_{}_filters_{}_dense_{}_dropout_{}_dense_{}_lr_{}_act_{}".format(self.conv_layers, self.conv_filters,
+                                              self.dense_layers, self.dropout_rate_dense, self.dense_layers,
                                               self.learning_rate, self.activation_fn)
-        
+
         self.x_train, self.x_val, self.y_train, self.y_val = self.load_data(x_data, y_data)
         self.model = self.create_model(num_output_classes=num_classes)
 
-            
+
     def load_data(self, x_train, y_train):
         # check whether input is numpy format or a link to google cloud storage
         if isinstance(x_train, str):
@@ -87,21 +93,21 @@ class cnn_model:
                 x_train1 = np.load(f)
             else:
                 x_train1 = np.load(x_train)
-            
+
         if isinstance(y_train, str):
             if "gs" in y_train:
                 f = BytesIO(file_io.read_file_to_string(y_train, binary_mode=True))
                 y_train1 = np.load(f)
             else:
                 y_train1 = np.load(y_train)
-            
+
         # create train and validation sets
         x_train, x_val, y_train, y_val = train_test_split(x_train1,
                                                             y_train1,
                                                             train_size=0.8,
                                                             random_state = 1) # random state during training, has to be removed later on
         return(x_train, x_val, y_train, y_val)
-        
+
     def create_model(self, num_output_classes):
         input_shape = self.x_train.shape[1:]
 
@@ -148,49 +154,49 @@ class cnn_model:
             model.add(Dense(self.dense_neurons, activation=self.activation_fn))
             model.add(Dropout(self.dropout_rate_dense))
         model.add(Dense(num_output_classes, activation='softmax')) # softmax remains unchanged
-        
+
         return model
-        
+
     def train(self, epochs, batch_size, tb_logs_dir=None,learning_rate=None, optimizer=None, loss=None, verbose=False, on_tpu=False):
         """
         trains the model.
 
         If the initial config file contained parameters for training then
         these dont have to be defined but can still be overridden
-        """ 
+        """
         if learning_rate is None:
-            learning_rate = self.learning_rate 
+            learning_rate = self.learning_rate
         if optimizer is None:
-            optimizer = self.optimizer 
+            optimizer = self.optimizer
         if loss is None:
-            loss = self.loss 
+            loss = self.loss
 
         early_stopping_callback = EarlyStopping(monitor="val_loss",
                                                 patience=5)
         callbacks = [early_stopping_callback]
-                  
+
         if bool(tb_logs_dir):
             date_time = datetime.now().strftime('%Y-%m-%d-%H%M%S')
             log_name = os.path.join(tb_logs_dir, "{}_{}".format(self.name, date_time))
-            
+
             # defining callbacks for training
             tensorboard_callback = TensorBoard(log_dir=log_name,
                                     write_graph=True,
                                     write_images=True)
             callbacks += [tensorboard_callback]
-        
+
         # model has to be compiled differently when on tpu
         if on_tpu:
-            self.train_on_tpu(epochs, batch_size, learning_rate, optimizer, loss, callbacks) 
+            self.train_on_tpu(epochs, batch_size, learning_rate, optimizer, loss, callbacks)
         else:
             self.train_on_cpu(epochs, batch_size, learning_rate, optimizer, loss, callbacks, verbose)
-            
+
 
     def train_on_cpu(self, epochs, batch_size, learning_rate, optimizer, loss, callbacks, verbose):
         self.y_train = tf.keras.utils.to_categorical(self.y_train, 2 )
         self.y_val = tf.keras.utils.to_categorical(self.y_val, 2 )
         self.model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy', f1_score])
-        self.model.fit(self.x_train, self.y_train, epochs=epochs, batch_size=batch_size, 
+        self.model.fit(self.x_train, self.y_train, epochs=epochs, batch_size=batch_size,
                        verbose=verbose, callbacks=callbacks, validation_data=(self.x_val, self.y_val))
 
     def train_on_tpu(self, epochs, batch_size, learning_rate, optimizer, loss, callbacks):
@@ -205,7 +211,7 @@ class cnn_model:
             validation_data=(self.x_val, self.y_val),
             callbacks=callbacks
             )
-        
+
         self.model = self.model.sync_to_cpu()
 
     def train_gen(self, batch_size):
@@ -244,7 +250,7 @@ class cnn_model:
 
 if __name__ == "__main__":
 
-    config_v1 = {    
+    config_v1 = {
         "conv_layers": 4,
         "conv_filters": 128,
         "dense_layers": 5,
@@ -276,9 +282,3 @@ if __name__ == "__main__":
     m2.load_model("my_model.HDF5")
 
     print("Everything worked")
-
-
-
-
-
-

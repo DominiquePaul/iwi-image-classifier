@@ -56,8 +56,8 @@
 
 import numpy as np
 import tensorflow as tf
-import modules.download as download
-from modules.cache import cache
+import download as download
+from cache import cache
 import os
 import sys
 
@@ -469,13 +469,13 @@ class Inception:
 
     # added function by Dominique Paul
     def return_score_dict(self, k=10, only_first_name=True, image_path=None, image=None):
-        
+
         # Create a feed-dict for the TensorFlow graph with the input image.
         feed_dict = self._create_feed_dict(image_path=image_path, image=image)
-        
+
         # Execute the TensorFlow session to get the predicted labels.
         pred = self.session.run(self.y_pred, feed_dict=feed_dict)
-        
+
         # Reduce the array to a single dimension.
         pred = np.squeeze(pred)
 
@@ -496,7 +496,7 @@ class Inception:
             score = pred[cls]
 
             pred_dict[name] = float(score)
-        
+
         return(pred_dict)
 
 
@@ -637,6 +637,18 @@ def transfer_values_cache(cache_path, model, images=None, image_paths=None):
 
     # Read the transfer-values from a cache-file, or calculate them if the file does not exist.
     transfer_values = cache(cache_path=cache_path, fn=fn)
+
+    return transfer_values
+
+def transfer_values(model, images=None, image_paths=None):
+    """
+    Function added by Dominique Paul: This function returns the transfer Values
+    of an image but does not save them anywhere. This is useful for cases, where
+    predictions are made only once and saving the cached files doesnt make sense
+    e.g. when making predictions
+    """
+
+    transfer_values  = process_images(fn=model.transfer_values, images=images, image_paths=image_paths)
 
     return transfer_values
 
