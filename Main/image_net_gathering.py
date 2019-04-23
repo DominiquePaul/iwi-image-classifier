@@ -451,31 +451,6 @@ Then:
 
 if __name__ == "__main__":
 
-    target_np_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files"
-
-    ##############################
-    ### load images with label ###
-    ##############################
-
-    # for cars
-    car_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/car/car",
-                        "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/car/no_car"]
-    car_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/cars"
-    car_names_raw, car_images = load_images(car_image_folders)
-    car_labels = read_label_json(car_json_folder)
-    car_names, car_files = return_labelled_images(car_labels, car_names_raw, car_files)
-    save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car", augment_training_data=True, split_into_train_test=True)
-
-
-    #################################
-    ### load images without label ###
-    #################################
-    save_to_numpy(folder_path=target_np_folder,
-                img_names=car_names_raw["file_name"],
-                files=car_images,
-                object="testing_data")
-
-
     #################################
     ### load images from imagenet ###
     #################################
@@ -483,8 +458,8 @@ if __name__ == "__main__":
     # create an own dataset via image-net
     synset_id = "n02958343" # synset for "auto" (check pls)
 
-    imgs_object = create_imagenet_dataset(synset_id=synset_id, size=10, use_child_synsets=True)
-    imgs_random = create_imagenet_dataset_random(size=10, max_synset_imgs=10, forbidden_synset=synset_id, exclude_synset_children=True)
+    imgs_object = create_imagenet_dataset(synset_id=synset_id, size=1000, use_child_synsets=True)
+    imgs_random = create_imagenet_dataset_random(size=10, max_synset_imgs=1000, forbidden_synset=synset_id, exclude_synset_children=True)
 
     imgnet_imgs = np.concatenate((imgs_object, imgs_random))
     imgnet_labels = np.array([1]*len(imgs_object) + [0]*len(imgs_random))
@@ -493,89 +468,8 @@ if __name__ == "__main__":
     imgnet_imgs = imgnet_imgs[random_order]
     imgnet_labels = imgnet_labels[random_order]
 
-    path_imgnet_imgs = os.path.join(target_np_folder, "imgnet_automobile_x")
-    path_imgnet_labels = os.path.join(target_np_folder, "imgnet_automobile_y")
-    np.save(path_imgnet_imgs, imgnet_imgs)
-    np.save(path_imgnet_labels, imgnet_labels)
-
-# x = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_x.npy")
-# y = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_y.npy")
-
-
-
-
-    # # for apparel
-    # apparel_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/apparel",
-    #                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/no_apparel"]
-    # apparel_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/apparel"
-    # apparel_names_raw, apparel_files = load_images(apparel_image_folders)
-    # apparel_labels = read_label_json(apparel_json_folder)
-    # apparel_names, apparel_files = return_labelled_images(apparel_labels, apparel_names_raw, apparel_files)
-    # save_to_numpy_with_labels(target_np_folder, apparel_files, apparel_names["label"], "apparel", augment_training_data=True, split_into_train_test=True)
-    #
-    # # for food
-    # food_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/food",
-    #                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/no_food"]
-    # food_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/food"
-    # food_names_raw, food_files = load_images(food_image_folders)
-    # food_labels = read_label_json(food_json_folder)
-    # food_names, food_files2 = return_labelled_images(food_labels, food_names_raw, food_files)
-    # save_to_numpy_with_labels(target_np_folder, food_files2, food_names["label"], "food", augment_training_data=True, split_into_train_test=True)
-    #
-
-
-
-
-
-
-
-
-
-
-"""
-from PIL import Image
-img = load_single_image("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/apparel/RalphLauren_6797246895_10153439142626896_.jpg")
-
-files, labs = augment_single_image(img, 1)
-img2 = Image.fromarray(translated, 'RGB')
-img2.show()
-
-blurring:
-https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
-edges: https://github.com/aleju/imgaug/issues/79
-
-
-# get words of the synsets
-a = requests.get("http://www.image-net.org/api/text/wordnet.synset.getwords?wnid=n02958343")
-a.text.split("\n")
-
-
-TOOLS:
-
-### show images and their labels
-for j in range(10):
-    i = np.random.randint(1,949)
-    print(i, food_names.reset_index().loc[i,"file_name"], food_names.reset_index().loc[i,"label"])
-    img2 = Image.fromarray(food_files2[i], 'RGB')
-    time.sleep(1)
-    img2.show()
-
-
-### searching for empty files
-c = []
-d = []
-for i in range(len(food_files)):
-    if food_files[i] is None:
-        d.extend([i])
-    elif food_files[i].shape != (299, 299, 3):
-        c.extend([i])
-
-
-
-### create a basic dataframe for testing purposes
-pd.DataFrame(data=[[1,2],[3,4]], columns=["hello", "estragon"]).reset_index()
-"""
-
+    np.save("imgnet_automobile_x", imgnet_imgs)
+    np.save("imgnet_automobile_y", imgnet_labels)
 
 
 
