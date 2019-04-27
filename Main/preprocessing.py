@@ -1,6 +1,8 @@
 import os
 import cv2
 import json
+import time
+import signal
 import random
 import requests
 import numpy as np
@@ -369,6 +371,9 @@ def get_synset_image_urls(synset_id):
     website_lines = website_content_string.split('\r\n')
     return (website_lines)
 
+def timeout_handler(num, stack):
+    raise Exception()
+
 def download_image(url):
     """
     downloads an image from a link and resizes it to desired size
@@ -377,12 +382,17 @@ def download_image(url):
     updated np.frombuffer as older version caused a deprecation warning
     """
     try:
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(5)
+
         response = requests.get(url)
         img_pre = BytesIO(response.content)
         img = cv2.imdecode(np.frombuffer(img_pre.read(), np.uint8), 1)
         img = resize_image(img)
     except:
         return None
+    finally:
+        signal.alarm(0)
     return img
 
 def create_imagenet_dataset(synset_id, size, use_child_synsets):
@@ -426,12 +436,12 @@ def create_imagenet_dataset_random(size, max_synset_imgs, forbidden_synset, excl
             urls = get_synset_image_urls(synset_id)
             for j, url in enumerate(urls):
                 img = download_image(url)
+                print("Synsets searched: {} --- URLs tried: {} --- images_found: {}".format(i, i*max_synset_imgs+j, counter), end="\r")
                 if img is not None:
                     counter += 1
                     image_list.extend([img])
                     if j >= max_synset_imgs or counter >= size:
                         break
-                print("Synsets searched: {} --- URLs tried: {} --- images_found: {}".format(i, i*max_synset_imgs+j, counter), end="\r")
             if counter >= size:
                 break
     return np.array(image_list)
@@ -474,32 +484,6 @@ if __name__ == "__main__":
                 img_names=car_names_raw["file_name"],
                 files=car_images,
                 object="testing_data")
-
-
-    #################################
-    ### load images from imagenet ###
-    #################################
-
-    # create an own dataset via image-net
-    synset_id = "n02958343" # synset for "auto" (check pls)
-
-    imgs_object = create_imagenet_dataset(synset_id=synset_id, size=10, use_child_synsets=True)
-    imgs_random = create_imagenet_dataset_random(size=10, max_synset_imgs=10, forbidden_synset=synset_id, exclude_synset_children=True)
-
-    imgnet_imgs = np.concatenate((imgs_object, imgs_random))
-    imgnet_labels = np.array([1]*len(imgs_object) + [0]*len(imgs_random))
-
-    random_order = np.random.permutation(len(imgnet_imgs))
-    imgnet_imgs = imgnet_imgs[random_order]
-    imgnet_labels = imgnet_labels[random_order]
-
-    path_imgnet_imgs = os.path.join(target_np_folder, "imgnet_automobile_x")
-    path_imgnet_labels = os.path.join(target_np_folder, "imgnet_automobile_y")
-    np.save(path_imgnet_imgs, imgnet_imgs)
-    np.save(path_imgnet_labels, imgnet_labels)
-
-# x = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_x.npy")
-# y = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_y.npy")
 
 
 
@@ -574,6 +558,35 @@ for i in range(len(food_files)):
 
 ### create a basic dataframe for testing purposes
 pd.DataFrame(data=[[1,2],[3,4]], columns=["hello", "estragon"]).reset_index()
+
+
+
+    #################################
+    ### load images from imagenet ###
+    #################################
+
+    # create an own dataset via image-net
+    synset_id = "n02958343" # synset for "auto" (check pls)
+
+    imgs_object = create_imagenet_dataset(synset_id=synset_id, size=10, use_child_synsets=True)
+    imgs_random = create_imagenet_dataset_random(size=10, max_synset_imgs=10, forbidden_synset=synset_id, exclude_synset_children=True)
+
+    imgnet_imgs = np.concatenate((imgs_object, imgs_random))
+    imgnet_labels = np.array([1]*len(imgs_object) + [0]*len(imgs_random))
+
+    random_order = np.random.permutation(len(imgnet_imgs))
+    imgnet_imgs = imgnet_imgs[random_order]
+    imgnet_labels = imgnet_labels[random_order]
+
+    path_imgnet_imgs = os.path.join(target_np_folder, "imgnet_automobile_x")
+    path_imgnet_labels = os.path.join(target_np_folder, "imgnet_automobile_y")
+    np.save(path_imgnet_imgs, imgnet_imgs)
+    np.save(path_imgnet_labels, imgnet_labels)
+
+# x = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_x.npy")
+# y = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_y.npy")
+
+
 """
 
 
