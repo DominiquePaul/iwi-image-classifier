@@ -19,7 +19,7 @@ from tensorflow.python import keras
 from tensorflow.python.keras import backend as K
 
 
-sys.path.append(dirname("/Users/dominiquepaul/xBachelorArbeit/Spring19/Bachelor-arbeit/4-wordnet/modules/"))
+sys.path.append(dirname("./modules/"))
 
 import inception_edit_dom as inception
 from inception_edit_dom import transfer_values_cache, transfer_values

@@ -14,7 +14,7 @@ car_names, car_files = prep.return_labelled_images(car_labels, car_names_raw, ca
 
 
 csv_out = car_names.copy()
-csv_out["file_name"] = "gs://data-imr-unisg/car_images/" + c_names["file_name"]
+csv_out["file_name"] = "gs://imr-unisg-vcm/car_images/" + csv_out["file_name"]
 csv_out = csv_out[["file_name", "label"]].copy()
 csv_out["label"] = pd.factorize(csv_out["label"])[0]
 

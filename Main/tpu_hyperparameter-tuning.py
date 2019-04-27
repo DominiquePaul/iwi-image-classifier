@@ -1,8 +1,8 @@
 """
 Adjustments Missing:
 
-If I want the scripts to work together as a whole I should write the Hyper Optimization as 
-    a function of some sorts so it can be called from another script. This means rewriting 
+If I want the scripts to work together as a whole I should write the Hyper Optimization as
+    a function of some sorts so it can be called from another script. This means rewriting
     variables as a function parameters
 """
 
@@ -13,7 +13,7 @@ from hyperopt import hp, fmin, tpe, Trials
 from hyperopt.pyll.stochastic import sample
 from timeit import default_timer as timer
 
-from tpu_v3 import cnn_model
+from tpu import cnn_model
 
 MAX_EVALS = 30
 
@@ -26,7 +26,7 @@ x_train_url = 'gs://data-imr-unisg/np_array_files/x_train.npy'
 y_train_url = 'gs://data-imr-unisg/np_array_files/class_labels_trainp.npy'
 
 # File to save first results
-out_file = 'bayes_trials.csv'
+out_file = 'trial_evaluation_out.csv'
 of_connection = open(out_file, 'w')
 writer = csv.writer(of_connection)
 # Write the headers to the file
@@ -47,17 +47,17 @@ def objective(params):
     train_loss = m_opt.hist.history["loss"][-1]
     train_accuracy = m_opt.hist.history["sparse_categorical_accuracy"][-1]
     train_f1 = m_opt.hist.history["f1_score"][-1]
-    
+
     # adding lines to csv
     of_connection = open(out_file, 'a')
     writer = csv.writer(of_connection)
     writer.writerow([params, run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1])
     of_connection.close()
-    
+
     print(val_loss)
-    
+
     return {"loss": val_loss,
-            "params": params, 
+            "params": params,
             "status": hyperopt.STATUS_OK}
 
 # Define the search space
@@ -74,7 +74,7 @@ space = {
 bayes_trials = Trials()
 
 # Optimize
-best = fmin(fn = objective, space = space, algo = tpe.suggest, 
+best = fmin(fn = objective, space = space, algo = tpe.suggest,
             max_evals = MAX_EVALS, trials = bayes_trials)
 
 # write best parameters as to disk
@@ -82,4 +82,3 @@ with open('best_parameters.csv', 'w') as csv_file:
     writer = csv.writer(csv_file)
     for key, value in best.items():
        writer.writerow([key, value])
-    
