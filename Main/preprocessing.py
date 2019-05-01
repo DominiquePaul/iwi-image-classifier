@@ -28,6 +28,7 @@ for data augmentation:
     https://medium.com/nanonets/how-to-use-deep-learning-when-you-have-limited-data-part-2-data-augmentation-c26971dc8ced
 """
 
+GLOBAL_RANDOM_STATE = 42
 
 resize_to_size = 299 # if set to None no resizing happens
 allow_skewing = False # if false then image is padded
@@ -187,6 +188,32 @@ def split_array(array1, nbuckets):
     ranges = [array1[i:j] for i,j in steps]
     return ranges
 
+def balance_dataset(x_data, y_data):
+    a,b = np.bincount(y_data)
+    diff = np.abs(a-b)
+    if a > b:
+        undersampled = x_data[np.where(y_data==1,True,False)]
+        label_num = 1
+    else:
+        undersampled = x_data[np.where(y_data==0,True,False)]
+        label_num = 0
+
+    new_images = []
+    max_idx = len(undersampled)
+    for i in range(diff):
+        idx = np.random.randint(0, max_idx)
+        new_images.extend([undersampled[idx]])
+    x2 = np.array(new_images)
+    y2 = np.array([label_num]*diff)
+    x_new = np.concatenate([x_data, x2])
+    y_new = np.concatenate([y_data, y2])
+
+    random_order = np.random.permutation(len(x_new))
+    x_new = x_new[random_order]
+    y_new = y_new[random_order]
+
+    return(x_new, y_new)
+
 def save_to_numpy(folder_path, files, img_names, object):
     """Saves a file as numpy pickle and checks whether max saving size is surpassed
     """
@@ -207,10 +234,12 @@ def save_to_numpy(folder_path, files, img_names, object):
 def save_to_numpy_with_labels(folder_path, files, labels, object, augment_training_data, split_into_train_test):
     labels, label_index = factorize_labels(labels)
     if split_into_train_test:
-        x_train, x_test, y_train, y_test = train_test_split(files, labels, test_size=0.2)
+        x_train, x_test, y_train, y_test = train_test_split(files, labels, test_size=0.2, random_state=GLOBAL_RANDOM_STATE)
     else:
         x_train=files
         y_train=labels
+
+    x_train, y_train = balance_dataset(x_train, y_train)
 
     if augment_training_data:
         x_train, y_train = augment_data(x_train, y_train, shuffle=True)
@@ -473,7 +502,7 @@ if __name__ == "__main__":
     car_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/cars"
     car_names_raw, car_images = load_images(car_image_folders)
     car_labels = read_label_json(car_json_folder)
-    car_names, car_files = return_labelled_images(car_labels, car_names_raw, car_files)
+    car_names, car_files = return_labelled_images(car_labels, car_names_raw, car_images)
     save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car", augment_training_data=True, split_into_train_test=True)
 
 
@@ -488,24 +517,24 @@ if __name__ == "__main__":
 
 
 
-    # # for apparel
-    # apparel_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/apparel",
-    #                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/no_apparel"]
-    # apparel_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/apparel"
-    # apparel_names_raw, apparel_files = load_images(apparel_image_folders)
-    # apparel_labels = read_label_json(apparel_json_folder)
-    # apparel_names, apparel_files = return_labelled_images(apparel_labels, apparel_names_raw, apparel_files)
-    # save_to_numpy_with_labels(target_np_folder, apparel_files, apparel_names["label"], "apparel", augment_training_data=True, split_into_train_test=True)
-    #
-    # # for food
-    # food_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/food",
-    #                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/no_food"]
-    # food_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/food"
-    # food_names_raw, food_files = load_images(food_image_folders)
-    # food_labels = read_label_json(food_json_folder)
-    # food_names, food_files2 = return_labelled_images(food_labels, food_names_raw, food_files)
-    # save_to_numpy_with_labels(target_np_folder, food_files2, food_names["label"], "food", augment_training_data=True, split_into_train_test=True)
-    #
+# # for apparel
+# apparel_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/apparel",
+#                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/no_apparel"]
+# apparel_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/apparel"
+# apparel_names_raw, apparel_files = load_images(apparel_image_folders)
+# apparel_labels = read_label_json(apparel_json_folder)
+# apparel_names, apparel_files = return_labelled_images(apparel_labels, apparel_names_raw, apparel_files)
+# save_to_numpy_with_labels(target_np_folder, apparel_files, apparel_names["label"], "apparel", augment_training_data=True, split_into_train_test=True)
+#
+# # for food
+# food_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/food",
+#                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/no_food"]
+# food_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/food"
+# food_names_raw, food_files = load_images(food_image_folders)
+# food_labels = read_label_json(food_json_folder)
+# food_names, food_files2 = return_labelled_images(food_labels, food_names_raw, food_files)
+# save_to_numpy_with_labels(target_np_folder, food_files2, food_names["label"], "food", augment_training_data=True, split_into_train_test=True)
+#
 
 
 

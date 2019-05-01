@@ -81,7 +81,13 @@ class cnn_model:
                                               self.dense_layers, self.dropout_rate_dense, self.dense_layers,
                                               self.learning_rate, self.activation_fn)
 
-        self.x_train, self.x_val, self.y_train, self.y_val = self.load_data(x_data, y_data)
+        x_data, y_data = self.maybe_load_data(x_data, y_data)
+        # create train and validation sets
+        self.x_train, self.x_val, self.y_train, self.y_val = train_test_split(x_train1,
+                                                             y_train1,
+                                                             train_size=0.8,
+                                                             random_state = 1) # random state during training, has to be removed later on
+
         self.model = self.create_model(num_output_classes=num_classes)
 
 
@@ -90,23 +96,18 @@ class cnn_model:
         if isinstance(x_train, str):
             if "gs" in x_train:
                 f = BytesIO(file_io.read_file_to_string(x_train, binary_mode=True))
-                x_train1 = np.load(f)
+                x_train = np.load(f)
             else:
-                x_train1 = np.load(x_train)
+                x_train = np.load(x_train)
 
         if isinstance(y_train, str):
             if "gs" in y_train:
                 f = BytesIO(file_io.read_file_to_string(y_train, binary_mode=True))
-                y_train1 = np.load(f)
+                y_train = np.load(f)
             else:
-                y_train1 = np.load(y_train)
+                y_train = np.load(y_train)
 
-        # create train and validation sets
-        x_train, x_val, y_train, y_val = train_test_split(x_train1,
-                                                            y_train1,
-                                                            train_size=0.8,
-                                                            random_state = 1) # random state during training, has to be removed later on
-        return(x_train, x_val, y_train, y_val)
+        return(x_train1, y_train1)
 
     def create_model(self, num_output_classes):
         input_shape = self.x_train.shape[1:]
@@ -207,7 +208,7 @@ class cnn_model:
         self.hist = self.model.fit_generator(
             self.train_gen(batch_size),
             epochs=epochs,
-            steps_per_epoch=10, # still have to change this
+            steps_per_epoch=10, # STILL HAVE TO CHANGE THIS
             validation_data=(self.x_val, self.y_val),
             callbacks=callbacks
             )
@@ -221,7 +222,6 @@ class cnn_model:
         """
         while True:
             offset = np.random.randint(0, self.x_train.shape[0] - batch_size)
-            # print(self.x_train[offset:offset+batch_size].shape, self.y_train[offset:offset + batch_size].shape)
             yield self.x_train[offset:offset+batch_size], self.y_train[offset:offset + batch_size]
 
     def predict(self, x_data):

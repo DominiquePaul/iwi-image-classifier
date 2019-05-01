@@ -125,37 +125,39 @@ class Transfer_net:
 
 
 
-# inception.maybe_download()
-x_train1, y_train1, x_test1, y_test1, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_0.npy")
-x_train2, y_train2, x_test2, y_test2, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_1.npy")
-x_train3, y_train3, x_test3, y_test3, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_2.npy")
+if __name__ == "__main__":
+    # inception.maybe_download()
+    x_train1, y_train1, x_test1, y_test1, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_0.npy")
+    x_train2, y_train2, x_test2, y_test2, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_1.npy")
+    x_train3, y_train3, x_test3, y_test3, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_2.npy")
 
-x_train = np.concatenate([x_train1, x_train2, x_train3])
-y_train = np.concatenate([y_train1, y_train2, y_train3])
-x_test = np.concatenate([x_test1, x_test2, x_test3])
-y_test = np.concatenate([y_test1, y_test2, y_test3])
-
-
-
-
-t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", 2)
-t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
-x_train = t_net.cache_transfer_data(x_train, img_group_name="x_train1")
-t_net.train(x_train, y_train, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
-
-
-x_test = t_net.cache_transfer_data(x_test, img_group_name="x_test")
-preds = t_net.predict_classes(x_test)
+    x_train = np.concatenate([x_train1, x_train2, x_train3])
+    y_train = np.concatenate([y_train1, y_train2, y_train3])
+    x_test = np.concatenate([x_test1, x_test2, x_test3])
+    y_test = np.concatenate([y_test1, y_test2, y_test3])
 
 
 
-sklearn.metrics.accuracy_score(y_test, preds)
-sklearn.metrics.f1_score(y_test, preds)
-sklearn.metrics.confusion_matrix(y_test, preds)
+
+
+    t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", 2)
+    t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
+    x_train = t_net.cache_transfer_data(x_train, img_group_name="x_train1")
+    t_net.train(x_train, y_train, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
+
+
+    x_test = t_net.cache_transfer_data(x_test, img_group_name="x_test")
+    preds = t_net.predict_classes(x_test)
 
 
 
-np.bincount(y_test)
+    sklearn.metrics.accuracy_score(y_test, preds)
+    sklearn.metrics.f1_score(y_test, preds)
+    sklearn.metrics.confusion_matrix(y_test, preds)
+
+
+
+    np.bincount(y_test)
 
 
 

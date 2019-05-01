@@ -41,7 +41,7 @@ class Cnn_ensemble_model:
     def save_ensemble(self, folder_name, overwrite=False):
         """
         Saves models to a new folder with a specific name
-        """ 
+        """
         if os.path.exists(folder_name):
             if overwrite:
                 print("Overwriting existing folder...")
@@ -49,7 +49,7 @@ class Cnn_ensemble_model:
                 for i in range(self.num_models):
                     model_file_path = os.path.join(folder_name, "ensemble_model_{}".format(i))
                     self.models[i].save_model(folder_path=None, name=model_file_path)
-            else: 
+            else:
                 raise ValueError("folder exists and no permission to overwrite. If you are sure you want to overwrite this folder then set the function parameter 'overwrite' to True")
         else:
             os.makedirs(folder_name)
@@ -76,7 +76,7 @@ class Cnn_ensemble_model:
 # ideally load this from the best paramaters found in hyperoptimisation before
 if __name__ == "__main__":
 
-    config_v1 = {    
+    config_v1 = {
         "conv_layers": 2,
         "conv_filters": 64,
         "dense_layers": 2,
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     y_train_url = 'gs://data-imr-unisg/np_array_files/class_labels_trainp.npy'
 
 
-    from io import BytesIO 
+    from io import BytesIO
     from tensorflow.python.lib.io import file_io
 
     x_test_url = "gs://data-imr-unisg/np_array_files/x_test.npy"
