@@ -83,8 +83,8 @@ class cnn_model:
 
         x_data, y_data = self.maybe_load_data(x_data, y_data)
         # create train and validation sets
-        self.x_train, self.x_val, self.y_train, self.y_val = train_test_split(x_train1,
-                                                             y_train1,
+        self.x_train, self.x_val, self.y_train, self.y_val = train_test_split(x_data,
+                                                             y_data,
                                                              train_size=0.8,
                                                              random_state = 1) # random state during training, has to be removed later on
 
