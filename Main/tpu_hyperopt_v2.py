@@ -18,8 +18,8 @@ from preprocessing import join_npy_data
 
 MAX_EVALS = 20
 
-data_url="gs://data-imr-unisg/np_array_files/car_image_package_train_val_split0.npy"
-x_train, y_train, _, _, conversion = join_npy_data(data_url, gcp_source=True)
+data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split0.npy']
+x_train, y_train, x_test, y_test , conversion = join_npy_data(data_url, gcp_source=True)
 
 # File to save first results
 out_file = 'out_files/trial_evaluation_out.csv'
@@ -35,7 +35,7 @@ of_connection.close()
 # hyperparameter optimization with hyperopt
 def objective(params):
     m_opt=cnn_model()
-    m_opt.new_model(x_train_url, y_train_url, 2, params)
+    m_opt.new_model(x_train, y_train, 2, params)
     print(m_opt.model.summary())
     start = timer()
     m_opt.train(on_tpu=True, epochs=40, batch_size=256)
