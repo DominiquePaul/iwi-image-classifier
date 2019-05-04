@@ -166,9 +166,7 @@ automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files
 
 
 # prop normal
-x_train, y_train, hx_test, y_test, conversion = join_npy_data(automotive_pckgs)
-
-
+x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 n_label_list = [3, 5, 8, 10, 15, 20, 25, 50]
 n_label_list = [10]
 
@@ -183,7 +181,6 @@ if FULL_BLOWN:
 
 x_train_df = pd.read_csv(FOLDER_PATH_SAVE + "/train_10")
 x_test_df = pd.read_csv(FOLDER_PATH_SAVE + "/test_10")
-
 
 basic_feats = ["max_score", "product_ref_count", "product_ref_sum", "product_reference"]
 wordnet_feats = ["product_count_wordnet", "maxscorevalue_wordnet", "product_sum_wordnet"]
@@ -216,7 +213,7 @@ for word in wordnet.synsets(OBJECT):
     synonyms.extend(word.lemma_names())
 
 predictions = []
-for img in tqdm(x_train):
+for img in tqdm(x_test):
     predictions.extend([(identify_item(img, synonyms))])
 
 approach = "direct_identification"
@@ -224,14 +221,12 @@ train_acc = train_f1 = None
 test_acc = metrics.accuracy_score(y_test, predictions)
 test_f1 = metrics.f1_score(y_test, predictions)
 
-[TP, FP], [FN, TN] = metrics.confusion_matrix(y_train, predictions, labels=None, sample_weight=None)
+[TP, FP], [FN, TN] = metrics.confusion_matrix(y_test, predictions, labels=None, sample_weight=None)
 
 with open(out_file, 'a') as of_connection:
     writer = csv.writer(of_connection)
-    writer.writerow([approach, train_acc, train_f1, test_acc, test_f1, TP, FP, FN, TN])
+    writer.writerow([approach, train_acc, train_f1, np.round(test_acc,3), np.round(test_f1,3), TP, FP, FN, TN])
     of_connection.close()
-
-
 
 
 #####################

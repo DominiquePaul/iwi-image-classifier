@@ -18,12 +18,14 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python import keras
 from tensorflow.python.keras import backend as K
 
-
 sys.path.append(dirname("./modules/"))
-
+from preprocessing import join_npy_data
 import inception_edit_dom as inception
 from inception_edit_dom import transfer_values_cache, transfer_values
 
+
+
+inception.maybe_download()
 
 def precision(y_true, y_pred):
     """Precision metric.
@@ -101,7 +103,7 @@ class Transfer_net:
         y_val = tf.keras.utils.to_categorical(y_val, 2)
 
         self.model.compile(loss=self.loss, optimizer=keras.optimizers.Adam(lr=self.learning_rate), metrics=['accuracy', f1_score])
-        self.model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size,
+        self.hist = self.model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size,
                        verbose=verbose, callbacks=callbacks, validation_data=(x_val, y_val))
 
     def predict_classes(self, images):
@@ -126,30 +128,18 @@ class Transfer_net:
 
 
 if __name__ == "__main__":
-    # inception.maybe_download()
-    x_train1, y_train1, x_test1, y_test1, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_0.npy")
-    x_train2, y_train2, x_test2, y_test2, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_1.npy")
-    x_train3, y_train3, x_test3, y_test3, conversion = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_2.npy")
 
-    x_train = np.concatenate([x_train1, x_train2, x_train3])
-    y_train = np.concatenate([y_train1, y_train2, y_train3])
-    x_test = np.concatenate([x_test1, x_test2, x_test3])
-    y_test = np.concatenate([y_test1, y_test2, y_test3])
-
-
-
-
+    inception.maybe_download()
+    automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
+    x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 
     t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", 2)
     t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
     x_train = t_net.cache_transfer_data(x_train, img_group_name="x_train1")
-    t_net.train(x_train, y_train, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
-
+    t_net.train(x_train, y_train, epochs=100, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
 
     x_test = t_net.cache_transfer_data(x_test, img_group_name="x_test")
     preds = t_net.predict_classes(x_test)
-
-
 
     sklearn.metrics.accuracy_score(y_test, preds)
     sklearn.metrics.f1_score(y_test, preds)
@@ -157,7 +147,6 @@ if __name__ == "__main__":
 
 
 
-    np.bincount(y_test)
 
 
 

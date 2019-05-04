@@ -13,24 +13,23 @@ from hyperopt import hp, fmin, tpe, Trials
 from hyperopt.pyll.stochastic import sample
 from timeit import default_timer as timer
 
-from tpu import cnn_model
+from tpu_v4 import cnn_model
+from preprocessing import join_npy_data
 
 MAX_EVALS = 20
 
-
-# offline
-x_train = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/1-OwnNetwork/np_array_files/x_train.npy"
-y_train = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/1-OwnNetwork/np_array_files/class_labels_train.npy"
-# online
-x_train_url = 'gs://data-imr-unisg/np_array_files/x_train.npy'
-y_train_url = 'gs://data-imr-unisg/np_array_files/class_labels_trainp.npy'
+data_url="tbd"
+x_train, y_train, _, _, conversion = join_npy_data(data_url, gcp_source=True)
 
 # File to save first results
-out_file = 'trial_evaluation_out.csv'
+out_file = 'out_files/trial_evaluation_out.csv'
 of_connection = open(out_file, 'w')
 writer = csv.writer(of_connection)
 # Write the headers to the file
-writer.writerow(['params','run_time', 'val_loss', 'val_accuracy','val_f1', 'train_loss', 'train_accuracy', 'train_f1'])
+writer.writerow(['conv_layers', 'conv_filters', 'dense_layers', 'dense_neurons',
+                'dropout_rate_dense', 'learning_rate', 'activation_fn', 'run_time',
+                'val_loss', 'val_accuracy','val_f1', 'train_loss', 'train_accuracy',
+                'train_f1'])
 of_connection.close()
 
 # hyperparameter optimization with hyperopt
@@ -39,7 +38,7 @@ def objective(params):
     m_opt.new_model(x_train_url, y_train_url, 2, params)
     print(m_opt.model.summary())
     start = timer()
-    m_opt.train(on_tpu=True, epochs=2, batch_size=256)
+    m_opt.train(on_tpu=True, epochs=40, batch_size=256)
     run_time = timer() - start
     val_loss = m_opt.hist.history["val_loss"][-1]
     val_accuracy = m_opt.hist.history["val_sparse_categorical_accuracy"][-1]
@@ -51,10 +50,13 @@ def objective(params):
     # adding lines to csv
     of_connection = open(out_file, 'a')
     writer = csv.writer(of_connection)
-    writer.writerow([params, run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1])
-    of_connection.close()
 
-    print(val_loss)
+    output_vals = [params["conv_layers"], params["conv_filters"], params["dense_layers"], params["dense_neurons"],
+                params["dropout_rate_dense"], params["learning_rate"], params["activation_fn"],
+                run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1]
+
+    writer.writerow(output_vals)
+    of_connection.close()
 
     return {"loss": val_loss,
             "params": params,
@@ -71,11 +73,9 @@ space = {
     "activation_fn": hp.choice('activation_fn', ["relu"])
 }
 
-bayes_trials = Trials()
-
 # Optimize
 best = fmin(fn = objective, space = space, algo = tpe.suggest,
-            max_evals = MAX_EVALS, trials = bayes_trials)
+            max_evals = MAX_EVALS, trials = Trials())
 
 # write best parameters as to disk
 with open('best_parameters.csv', 'w') as csv_file:

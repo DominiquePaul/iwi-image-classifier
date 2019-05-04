@@ -81,7 +81,7 @@ class cnn_model:
                                               self.dense_layers, self.dropout_rate_dense, self.dense_layers,
                                               self.learning_rate, self.activation_fn)
 
-        x_data, y_data = self.maybe_load_data(x_data, y_data)
+        #x_data, y_data = self.maybe_load_data(x_data, y_data)
         # create train and validation sets
         self.x_train, self.x_val, self.y_train, self.y_val = train_test_split(x_data,
                                                              y_data,
@@ -89,25 +89,6 @@ class cnn_model:
                                                              random_state = 1) # random state during training, has to be removed later on
 
         self.model = self.create_model(num_output_classes=num_classes)
-
-
-    def maybe_load_data(self, x_train, y_train):
-        # check whether input is numpy format or a link to google cloud storage
-        if isinstance(x_train, str):
-            if "gs" in x_train:
-                f = BytesIO(file_io.read_file_to_string(x_train, binary_mode=True))
-                x_train = np.load(f)
-            else:
-                x_train = np.load(x_train)
-
-        if isinstance(y_train, str):
-            if "gs" in y_train:
-                f = BytesIO(file_io.read_file_to_string(y_train, binary_mode=True))
-                y_train = np.load(f)
-            else:
-                y_train = np.load(y_train)
-
-        return(x_train, y_train)
 
     def create_model(self, num_output_classes):
         input_shape = self.x_train.shape[1:]

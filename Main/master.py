@@ -87,18 +87,8 @@ save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car_
 
 
 # non_augmented
-automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split1.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split2.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split3.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split4.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split5.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split6.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split7.npy"]
-
-
-# prop normal
-x_train, y_train, hx_test, y_test, conversion = join_npy_data(automotive_pckgs)
+automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
+x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 # prop augmented
 automotive_pckgs_augmented = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split0.npy",
                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split1.npy",

@@ -231,10 +231,11 @@ def save_to_numpy(folder_path, files, img_names, object):
         np.save(path, file_bundle_out)
         print("File package {} out of {} saved successfully".format(i+1, len(files)), end="\r")
 
-def save_to_numpy_with_labels(folder_path, files, labels, object, augment_training_data, split_into_train_test):
+def save_to_numpy_with_labels(folder_path, files, labels, object, augment_training_data, train_val_test_split):
     labels, label_index = factorize_labels(labels)
-    if split_into_train_test:
-        x_train, x_test, y_train, y_test = train_test_split(files, labels, test_size=0.2, random_state=GLOBAL_RANDOM_STATE)
+    if train_val_test_split:
+        x_train, x_test, y_train, y_test = train_test_split(files, labels, test_size=0.1, random_state=GLOBAL_RANDOM_STATE)
+        x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2, random_state=GLOBAL_RANDOM_STATE)
     else:
         x_train=files
         y_train=labels
@@ -245,28 +246,31 @@ def save_to_numpy_with_labels(folder_path, files, labels, object, augment_traini
         x_train, y_train = augment_data(x_train, y_train, shuffle=True)
 
     # checking whether the file size is larger than 4 gigabytes (*1.2 for margin of error)
-    if split_into_train_test:
-        approx_file_size = (x_train[0].nbytes + y_train[0].nbytes) * (len(x_train) + len(x_test)) * 1.3
+    if train_val_test_split:
+        approx_file_size = (x_train[0].nbytes + y_train[0].nbytes) * (len(x_train) + len(x_val)) * 1.3
     else:
-        approx_file_size = (x_train[0].nbytes + y_train[0].nbytes) * len(x_train)
+        approx_file_size = (x_train[0].nbytes + y_train[0].nbytes) * len(x_train) * 1.3
     gb = approx_file_size / 1.08e+9 # approximate conversion rate of byte to GB
     splits = int(np.ceil(gb)) # two gb is the max size for saving a np array to disk on mac as of python y 3.6.8, so we choose a convenient cap of approx one gb
     print("splits needed: {}".format(splits))
 
     x_train = split_array(x_train, splits)
     y_train = split_array(y_train, splits)
-    if split_into_train_test:
-        x_test = split_array(x_test, splits)
-        y_test = split_array(y_test, splits)
+    if train_val_test_split:
+        x_val = split_array(x_val, splits)
+        y_val = split_array(y_val, splits)
+
+    if train_val_test_split:
+        path_testing_set = os.path.join(folder_path, object + "_final_testing_dataset")
+        final_testing_set = np.array([x_test, y_test, label_index])
+        np.save(path_testing_set, final_testing_set)
 
     for i in range(len(x_train)):
-        if split_into_train_test:
-            file_bundle_out = np.array([x_train[i], y_train[i], x_test[i], y_test[i], label_index])
+        if train_val_test_split:
+            file_bundle_out = np.array([x_train[i], y_train[i], x_val[i], y_val[i], label_index])
+            path = os.path.join(folder_path, object + "_image_package_train_val_split" + str(i))
         else:
             file_bundle_out = np.array([x_train[i], y_train[i], label_index])
-        if split_into_train_test:
-            path = os.path.join(folder_path, object + "_image_package_train_test_split" + str(i))
-        else:
             path = os.path.join(folder_path, object + "_image_package_" + str(i))
         np.save(path, file_bundle_out)
         print("File package {} out of {} saved successfully".format(i+1, len(x_train)), end="\r")
@@ -475,13 +479,17 @@ def create_imagenet_dataset_random(size, max_synset_imgs, forbidden_synset, excl
                 break
     return np.array(image_list)
 
-def join_npy_data(list1):
+def join_npy_data(list1, gcp_source=False):
     x_train_c = []
     x_test_c = []
     y_train_c = []
     y_test_c = []
     for element in tqdm(list1):
-        x_train1, y_train1, x_test1, y_test1, conversion = np.load(element)
+        if gcp_link:
+            f = BytesIO(file_io.read_file_to_string(element, binary_mode=True))
+            x_train1, y_train1, x_test1, y_test1, conversion = np.load(f)
+        else:
+            x_train1, y_train1, x_test1, y_test1, conversion = np.load(element)
         x_train_c.extend(x_train1)
         y_train_c.extend(y_train1)
         x_test_c.extend(x_test1)
@@ -491,6 +499,7 @@ def join_npy_data(list1):
     y_train_c = np.array(y_train_c)
     y_test_c = np.array(y_test_c)
     return(x_train_c, y_train_c, x_test_c, y_test_c, conversion)
+
 
 
 """
@@ -508,7 +517,7 @@ Then:
 
 if __name__ == "__main__":
 
-    target_np_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files"
+    target_np_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files2"
 
     ##############################
     ### load images with label ###
@@ -517,20 +526,31 @@ if __name__ == "__main__":
     # for cars
     car_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/car/car",
                         "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/car/no_car"]
+
     car_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/cars"
     car_names_raw, car_images = load_images(car_image_folders)
     car_labels = read_label_json(car_json_folder)
     car_names, car_files = return_labelled_images(car_labels, car_names_raw, car_images)
-    save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car", augment_training_data=True, split_into_train_test=True)
+    save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car", augment_training_data=False, train_val_test_split=True)
 
 
     #################################
     ### load images without label ###
     #################################
-    save_to_numpy(folder_path=target_np_folder,
-                img_names=car_names_raw["file_name"],
-                files=car_images,
-                object="testing_data")
+    # save_to_numpy(folder_path=target_np_folder,
+    #             img_names=car_names_raw["file_name"],
+    #             files=car_images,
+    #             object="testing_data")
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -542,7 +562,7 @@ if __name__ == "__main__":
 # apparel_names_raw, apparel_files = load_images(apparel_image_folders)
 # apparel_labels = read_label_json(apparel_json_folder)
 # apparel_names, apparel_files = return_labelled_images(apparel_labels, apparel_names_raw, apparel_files)
-# save_to_numpy_with_labels(target_np_folder, apparel_files, apparel_names["label"], "apparel", augment_training_data=True, split_into_train_test=True)
+# save_to_numpy_with_labels(target_np_folder, apparel_files, apparel_names["label"], "apparel", augment_training_data=True, train_val_test_split=True)
 #
 # # for food
 # food_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/food",
@@ -551,14 +571,7 @@ if __name__ == "__main__":
 # food_names_raw, food_files = load_images(food_image_folders)
 # food_labels = read_label_json(food_json_folder)
 # food_names, food_files2 = return_labelled_images(food_labels, food_names_raw, food_files)
-# save_to_numpy_with_labels(target_np_folder, food_files2, food_names["label"], "food", augment_training_data=True, split_into_train_test=True)
-#
-
-
-
-
-
-
+# save_to_numpy_with_labels(target_np_folder, food_files2, food_names["label"], "food", augment_training_data=True, train_val_test_split=True)
 
 
 
