@@ -10,6 +10,7 @@ import pandas as pd
 from tqdm import tqdm
 from io import BytesIO
 from bs4 import BeautifulSoup
+from tensorflow.python.lib.io import file_io
 from sklearn.model_selection import train_test_split
 
 """
