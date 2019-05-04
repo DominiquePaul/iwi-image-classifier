@@ -475,6 +475,24 @@ def create_imagenet_dataset_random(size, max_synset_imgs, forbidden_synset, excl
                 break
     return np.array(image_list)
 
+def join_npy_data(list1):
+    x_train_c = []
+    x_test_c = []
+    y_train_c = []
+    y_test_c = []
+    for element in tqdm(list1):
+        x_train1, y_train1, x_test1, y_test1, conversion = np.load(element)
+        x_train_c.extend(x_train1)
+        y_train_c.extend(y_train1)
+        x_test_c.extend(x_test1)
+        y_test_c.extend(y_test1)
+    x_train_c = np.array(x_train_c)
+    x_test_c = np.array(x_test_c)
+    y_train_c = np.array(y_train_c)
+    y_test_c = np.array(y_test_c)
+    return(x_train_c, y_train_c, x_test_c, y_test_c, conversion)
+
+
 """
 visualisation:
 - show images_v2

@@ -39,6 +39,34 @@ def write_results_to_csv(x_train, x_test, predictions, name, object_name, method
         writer.writerow(["harry", "car", "transfer_net", "custom", "no", len(x_train), len(x_test), accuracy_test, f1_score_test, TP, FP, FN, TN])
 
 
+"""
+Data inputs:
+* prop normal
+* prop augmented
+* imagenet normal
+* imagenet augmented
+
+Models:
+* own network (already optimised)
+* transfer learning (already optimised)
+* wordnet approaches (5x)
+
+
+"""
+
+
+own_network_config = {
+    "conv_layers": 4,
+    "conv_filters": 128,
+    "dense_layers": 5,
+    "dense_neurons": 20,
+    "dropout_rate_dense": 0.2,
+    "learning_rate": 1e-04,
+    "activation_fn": "relu"
+}
+
+
+
 
 ################################################################################
 ################################ Process Data ##################################
@@ -52,8 +80,11 @@ car_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files
 car_names_raw, car_images = load_images(car_image_folders)
 car_labels = read_label_json(car_json_folder)
 car_names, car_files = return_labelled_images(car_labels, car_names_raw, car_images)
+
 save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car", augment_training_data=False, split_into_train_test=True)
 save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car_augmented", augment_training_data=True, split_into_train_test=True)
+
+
 
 # non_augmented
 automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy",
@@ -65,62 +96,53 @@ automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files
                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split6.npy",
                     "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split7.npy"]
 
-x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 
-y_test == y_test_augmented
+# prop normal
+x_train, y_train, hx_test, y_test, conversion = join_npy_data(automotive_pckgs)
+# prop augmented
+automotive_pckgs_augmented = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split0.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split1.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split2.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split3.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split4.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split5.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split6.npy",
+                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_augmented_image_package_train_test_split7.npy"]
 
+# imagenet normal
+x_train_imagenet = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/ImageNet/image_net_images_imgnet_automobile_x.npy")
+y_train_imagenet = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/ImageNet/image_net_images_imgnet_automobile_y.npy")
+
+# imagenet augmented
+x_train_imagenet_augmented, y_train_imagenet_augmented =  augment_data(x_train_imagenet, y_train_imagenet, shuffle=True)
 
 ################################################################################
 ################################ Own Network ###################################
 ################################################################################
-config_v1 = {
-    "conv_layers": 4,
-    "conv_filters": 128,
-    "dense_layers": 5,
-    "dense_neurons": 20,
-    "dropout_rate_dense": 0.2,
-    "learning_rate": 1e-04,
-    "activation_fn": "relu"
-}
-
-print("New Model")
-m1 = cnn_model()
-m1.new_model(x_train_url, y_train_url, 2, config_v1)
-print("training model...")
-m1.train(epochs=2, batch_size=256, on_tpu=True, tb_logs_dir="gs://data-imr-unisg/logs/")
-print("Saving Model")
-m1.save_model(file_path="my_model")
-
-y_preds = m1.predict_classes(y_test)
-
-write_results_to_csv(x_train=x_train,
-                     x_test=x_test,
-                     predictions=y_preds,
-                     name=m1.name,
-                     object_name="cars",
-                     method_type="own Network",
-                     data_type="custom",
-                     augmented="no")
+def run_custom_network(object_name,data_type, augmented):
+    m1 = cnn_model()
+    m1.new_model(x_train_url, y_train_url, 2, config_v1)
+    print("Training custom net for {}".format(object_name))
+    m1.train(epochs=2, batch_size=256, on_tpu=True, tb_logs_dir="gs://data-imr-unisg/logs/")
+    y_preds = m1.predict_classes(y_test)
+    write_results_to_csv(x_train=x_train, x_test=x_test, predictions=y_preds, name=m1.name, object_name=object_name,
+                         method_type="own Network", data_type=data_type, augmented=augmented)
 
 ################################################################################
 ############################## Transfer Network ################################
 ################################################################################
-t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", num_output_classes=2)
-t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
-x_train_transfer = t_net.cache_transfer_data(x_train[:100], img_group_name="x_train1")
-t_net.train(x_train_transfer, y_train[:100], epochs=2, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
+# have to change some parameters here
+def run_tranfer_network(object_name,data_type, augmented):
+    t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", num_output_classes=2)
+    t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
+    x_train_transfer = t_net.cache_transfer_data(x_train, img_group_name="x_train1")
+    print("Training transfer net for {}".format(object_name))
+    t_net.train(x_train_transfer, y_train, epochs=2, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
+    x_test = t_net.cache_transfer_data(x_test, img_group_name="x_test")
+    y_preds = t_net.predict_classes(x_test)
 
-x_test = t_net.cache_transfer_data(x_test, img_group_name="x_test")
-y_preds = t_net.predict_classes(x_test)
-
-write_results_to_csv(x_train=x_train,
-                     x_test=x_test,
-                     predictions=y_preds,
-                     name=m1.name,
-                     object_name="cars",
-                     method_type="Transfer Network",
-                     data_type="custom",
-                     augmented="no")
+    write_results_to_csv(x_train=x_train, x_test=x_test, predictions=y_preds, name="transfer_net_{object_name}".format(), object_name=object_name,
+                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
 
 
 ################################################################################

@@ -71,7 +71,8 @@ class Logistic_regression:
         predictions = self.predict_classes(x_test)
         accuracy = metrics.accuracy_score(y_test, predictions)
         f1_metric = metrics.f1_score(y_test, predictions)
-        return(np.round(accuracy,rounded_to), np.round(f1_metric,rounded_to))
+        [TP, FP], [FN, TN] = metrics.confusion_matrix(y_test, predictions)
+        return(np.round(accuracy,rounded_to), np.round(f1_metric,rounded_to), (TP, FP, FN, TN))
 
 class Lasso_regression(Logistic_regression):
 
