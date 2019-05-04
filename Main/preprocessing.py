@@ -485,7 +485,7 @@ def join_npy_data(list1, gcp_source=False):
     y_train_c = []
     y_test_c = []
     for element in tqdm(list1):
-        if gcp_link:
+        if gcp_source:
             f = BytesIO(file_io.read_file_to_string(element, binary_mode=True))
             x_train1, y_train1, x_test1, y_test1, conversion = np.load(f)
         else:
