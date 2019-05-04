@@ -18,7 +18,7 @@ from preprocessing import join_npy_data
 
 MAX_EVALS = 20
 
-data_url="tbd"
+data_url="car_image_package_train_val_split0.npy"
 x_train, y_train, _, _, conversion = join_npy_data(data_url, gcp_source=True)
 
 # File to save first results
