@@ -135,14 +135,14 @@ def extract_features(img ,industry_labels=None, object_name=None, k_labels=10, b
 
 def create_feature_df(imgs, object_name=None, ind_labels=None, k_labels=10, basic_feats=True, wordnet_feats=True):
     df = pd.DataFrame([])
-    for i in range(imgs.shape[0]):
+    for i in tqdm(range(imgs.shape[0])):
         features = extract_features(img=imgs[i], object_name=object_name, industry_labels=ind_labels, k_labels=k_labels, basic_feats=basic_feats , wordnet_feats=wordnet_feats)
         df_temp = pd.DataFrame([features])
         df = df.append(df_temp, ignore_index=True)
     return df
 
 
-FULL_BLOWN = False
+FULL_BLOWN = True
 
 
 # if __name__ == "__main__":
@@ -160,16 +160,9 @@ FOLDER_PATH_SAVE = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/temp_data
 OBJECT = "car"
 ind_labels = load_industry_labels(file_name="selection_AutomobileManufacturers.csv")
 
-# TO BE CHANGED
+
 # non_augmented
-automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split1.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split2.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split3.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split4.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split5.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split6.npy",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split7.npy"]
+automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
 
 
 # prop normal
@@ -177,7 +170,7 @@ x_train, y_train, hx_test, y_test, conversion = join_npy_data(automotive_pckgs)
 
 
 n_label_list = [3, 5, 8, 10, 15, 20, 25, 50]
-
+n_label_list = [10]
 
 
 if FULL_BLOWN:

@@ -91,7 +91,7 @@ class cnn_model:
         self.model = self.create_model(num_output_classes=num_classes)
 
 
-    def load_data(self, x_train, y_train):
+    def maybe_load_data(self, x_train, y_train):
         # check whether input is numpy format or a link to google cloud storage
         if isinstance(x_train, str):
             if "gs" in x_train:
