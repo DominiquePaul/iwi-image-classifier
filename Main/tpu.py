@@ -107,7 +107,7 @@ class cnn_model:
             else:
                 y_train = np.load(y_train)
 
-        return(x_train1, y_train1)
+        return(x_train, y_train)
 
     def create_model(self, num_output_classes):
         input_shape = self.x_train.shape[1:]
