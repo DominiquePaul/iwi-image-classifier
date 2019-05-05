@@ -21,6 +21,13 @@ MAX_EVALS = 20
 data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split0.npy']
 x_train, y_train, x_test, y_test , conversion = join_npy_data(data_url, gcp_source=True)
 
+
+data =["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
+x_train, y_train, x_test, y_test , conversion = join_npy_data(data, gcp_source=False)
+
+
+
+
 # File to save first results
 out_file = 'out_files/custom_nn_hyperopt.csv'
 with open(out_file, 'w') as csv_file:
@@ -66,8 +73,8 @@ space = {
     "conv_layers": hp.quniform("conv_layers", 4, 8, 1),
     "conv_filters": hp.quniform("conv_filters", 2, 128, 1),
     "dense_layers": hp.quniform("dense_layers", 1, 5, 1),
-    "dense_neurons": hp.quniform("dense_neurons", 1, 100, 1),
-    "dropout_rate_dense": hp.uniform("dropout_rate_dense",0,1),
+    "dense_neurons": hp.quniform("dense_neurons", 2, 100, 1),
+    "dropout_rate_dense": hp.uniform("dropout_rate_dense",0,0.9),
     "learning_rate": hp.loguniform('learning_rate', np.log(1e-02), np.log(1e-06)),
 }
 
