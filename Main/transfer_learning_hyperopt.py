@@ -11,29 +11,21 @@ from preprocessing import join_npy_data
 EPOCHS = 10000
 MAX_EVALS = 20
 
-
 # File to save first results
 out_file = 'out_files/transfer_learning_hyperopt_out.csv'
-of_connection = open(out_file, 'w')
-writer = csv.writer(of_connection)
+with open(out_file, 'w') as csv_file:
+    writer = csv.writer(csv_file)
+    # Write the headers to the file
+    writer.writerow(['neurons','layers','dropout_rate','learning_rate','run_time', 'val_loss', 'val_accuracy','val_f1', 'train_loss', 'train_accuracy', 'train_f1'])
 
 automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
 x_data, y_train, _, _, conversion = join_npy_data(automotive_pckgs)
 
-# Write the headers to the file
-writer.writerow(['params','run_time', 'val_loss', 'val_accuracy','val_f1', 'train_loss', 'train_accuracy', 'train_f1'])
-of_connection.close()
-
 # hyperparameter optimization with hyperopt
 def objective(params):
-    print(params["neurons"])
-    print(params["layers"])
-    print(params["dropout_rate"])
     t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", 2)
     t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
     x_train = t_net.cache_transfer_data(x_data, img_group_name="x_train_T6")
-
-
     start = timer()
     t_net.train(x_train, y_train, epochs=EPOCHS, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
     run_time = timer() - start
@@ -46,10 +38,10 @@ def objective(params):
     train_f1 = t_net.hist.history["f1_score"][-1]
 
     # adding lines to csv
-    of_connection = open(out_file, 'a')
-    writer = csv.writer(of_connection)
-    writer.writerow([params, run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1])
-    of_connection.close()
+    with open(out_file, 'a') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow([params['neurons'],params['layers'],params['dropout_rate'],params['learning_rate'],
+                        run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1])
 
     return {"loss": val_loss,
             "params": params,
@@ -66,3 +58,9 @@ space = {
 # Optimize
 best = fmin(fn = objective, space = space, algo = tpe.suggest,
             max_evals = MAX_EVALS, trials = Trials())
+
+# write best parameters as to disk
+with open('out_files/best_transfer_learning_parameters.csv', 'w') as csv_file:
+    writer = csv.writer(csv_file)
+    for key, value in best.items():
+       writer.writerow([key, value])

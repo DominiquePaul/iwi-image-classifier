@@ -5,13 +5,10 @@ import pandas as pd
 
 from tpu_v3 import cnn_model
 
-
 # parameters:
 NUM_MODELS = 3
 TRAIN_ON_TPU = True
 FOLDER_PATH = "/Users/dominiquepaul/xBachelorArbeit/Daten/3-Spring19/ensemble_savings"
-
-
 
 class Cnn_ensemble_model:
     def __init__(self):

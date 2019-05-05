@@ -10,7 +10,6 @@ import pandas as pd
 from tqdm import tqdm
 from io import BytesIO
 from bs4 import BeautifulSoup
-from io import BytesIO
 from tensorflow.python.lib.io import file_io
 from sklearn.model_selection import train_test_split
 
@@ -508,13 +507,9 @@ def join_npy_data(list1, gcp_source=False):
 visualisation:
 - show images_v2
 - show transfer vals
-- balance training set
 
 Then:
-* AutoML
-* Fetch Wordnet Datasets
 * Write on pre-processing
-* Hyperopt transfer learn
 """
 
 if __name__ == "__main__":
@@ -590,11 +585,9 @@ blurring:
 https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html
 edges: https://github.com/aleju/imgaug/issues/79
 
-
 # get words of the synsets
 a = requests.get("http://www.image-net.org/api/text/wordnet.synset.getwords?wnid=n02958343")
 a.text.split("\n")
-
 
 TOOLS:
 
@@ -606,7 +599,6 @@ for j in range(10):
     time.sleep(1)
     img2.show()
 
-
 ### searching for empty files
 c = []
 d = []
@@ -616,47 +608,7 @@ for i in range(len(food_files)):
     elif food_files[i].shape != (299, 299, 3):
         c.extend([i])
 
-
-
 ### create a basic dataframe for testing purposes
 pd.DataFrame(data=[[1,2],[3,4]], columns=["hello", "estragon"]).reset_index()
 
-
-
-    #################################
-    ### load images from imagenet ###
-    #################################
-
-    # create an own dataset via image-net
-    synset_id = "n02958343" # synset for "auto" (check pls)
-
-    imgs_object = create_imagenet_dataset(synset_id=synset_id, size=10, use_child_synsets=True)
-    imgs_random = create_imagenet_dataset_random(size=10, max_synset_imgs=10, forbidden_synset=synset_id, exclude_synset_children=True)
-
-    imgnet_imgs = np.concatenate((imgs_object, imgs_random))
-    imgnet_labels = np.array([1]*len(imgs_object) + [0]*len(imgs_random))
-
-    random_order = np.random.permutation(len(imgnet_imgs))
-    imgnet_imgs = imgnet_imgs[random_order]
-    imgnet_labels = imgnet_labels[random_order]
-
-    path_imgnet_imgs = os.path.join(target_np_folder, "imgnet_automobile_x")
-    path_imgnet_labels = os.path.join(target_np_folder, "imgnet_automobile_y")
-    np.save(path_imgnet_imgs, imgnet_imgs)
-    np.save(path_imgnet_labels, imgnet_labels)
-
-# x = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_x.npy")
-# y = np.load("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/imgnet_automobile_y.npy")
-
-
 """
-
-
-
-
-
-
-
-
-
-#

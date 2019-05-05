@@ -71,7 +71,7 @@ class cnn_model:
         self.dense_neurons = int(config["dense_neurons"])
         self.dropout_rate_dense = config["dropout_rate_dense"]
         self.learning_rate = config["learning_rate"]
-        self.activation_fn = config["activation_fn"]
+        self.activation_fn = "relu"
 
         # we give the model a name that describes its parameters
         if bool(name):
@@ -183,13 +183,13 @@ class cnn_model:
 
     def train_on_tpu(self, epochs, batch_size, learning_rate, optimizer, loss, callbacks):
         self.model = tf.contrib.tpu.keras_to_tpu_model(self.model, strategy=tf.contrib.tpu.TPUDistributionStrategy(tf.contrib.cluster_resolver.TPUClusterResolver(self.tpu_instance_name)))
-        self.model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=1e-3, ), loss=tf.keras.losses.sparse_categorical_crossentropy, metrics=['sparse_categorical_accuracy', f1_score])
+        self.model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate, ), loss=tf.keras.losses.binary_crossentropy, metrics=['accuracy', f1_score])
 
         # has to be optimised to really train a epoch with full data
         self.hist = self.model.fit_generator(
             self.train_gen(batch_size),
             epochs=epochs,
-            steps_per_epoch=10, # STILL HAVE TO CHANGE THIS
+            steps_per_epoch=len(self.x_train)//batch_size,
             validation_data=(self.x_val, self.y_val),
             callbacks=callbacks
             )
