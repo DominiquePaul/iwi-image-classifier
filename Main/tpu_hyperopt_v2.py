@@ -21,6 +21,12 @@ MAX_EVALS = 20
 data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split0.npy']
 x_train, y_train, x_test, y_test , conversion = join_npy_data(data_url, gcp_source=True)
 
+data =["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
+x_train, y_train, x_test, y_test , conversion = join_npy_data(data, gcp_source=False)
+
+len(x_train)//100
+
+
 # File to save first results
 out_file = 'out_files/custom_nn_hyperopt.csv'
 with open(out_file, 'w') as csv_file:
@@ -43,7 +49,7 @@ def objective(params):
     val_accuracy = m_opt.hist.history["val_sparse_categorical_accuracy"][-1]
     val_f1 = m_opt.hist.history["val_f1_score"][-1]
     train_loss = m_opt.hist.history["loss"][-1]
-    train_accuracy = m_opt.hist.history["val_sparse_categorical_accuracy"][-1]
+    train_accuracy = m_opt.hist.history["sparse_categorical_accuracy"][-1]
     train_f1 = m_opt.hist.history["f1_score"][-1]
 
     output_vals = [params["conv_layers"], params["conv_filters"], params["dense_layers"], params["dense_neurons"],
