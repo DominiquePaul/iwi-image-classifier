@@ -189,7 +189,7 @@ class cnn_model:
         self.hist = self.model.fit_generator(
             self.train_gen(batch_size),
             epochs=epochs,
-            steps_per_epoch=10 #len(self.x_train)//batch_size,
+            steps_per_epoch=10, #len(self.x_train)//batch_size,
             validation_data=(self.x_val, self.y_val),
             callbacks=callbacks
             )
