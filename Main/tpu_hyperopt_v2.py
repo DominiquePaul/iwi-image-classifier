@@ -36,13 +36,14 @@ def objective(params):
     m_opt=cnn_model()
     m_opt.new_model(x_train, y_train, 2, params)
     start = timer()
-    m_opt.train(on_tpu=True, epochs=40, batch_size=256)
+    # add a special logs directory to see what is happening during each iteration
+    m_opt.train(on_tpu=True, epochs=100, batch_size=256, tb_logs_dir="gs://data-imr-unisg/logs_hyperopt/")
     run_time = timer() - start
     val_loss = m_opt.hist.history["val_loss"][-1]
-    val_accuracy = m_opt.hist.history["acc"][-1]
+    val_accuracy = m_opt.hist.history["val_sparse_categorical_accuracy"][-1]
     val_f1 = m_opt.hist.history["val_f1_score"][-1]
     train_loss = m_opt.hist.history["loss"][-1]
-    train_accuracy = m_opt.hist.history["acc"][-1]
+    train_accuracy = m_opt.hist.history["val_sparse_categorical_accuracy"][-1]
     train_f1 = m_opt.hist.history["f1_score"][-1]
 
     output_vals = [params["conv_layers"], params["conv_filters"], params["dense_layers"], params["dense_neurons"],
@@ -50,10 +51,9 @@ def objective(params):
                 run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1]
 
     # adding lines to csv
-    with open(out_file, 'a') csv_file:
+    with open(out_file, 'a') as csv_file:
         writer = csv.writer(of_connection)
         writer.writerow(output_vals)
-
 
     return {"loss": val_loss,
             "params": params,

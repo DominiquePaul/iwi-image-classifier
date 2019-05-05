@@ -64,3 +64,6 @@ with open('out_files/best_transfer_learning_parameters.csv', 'w') as csv_file:
     writer = csv.writer(csv_file)
     for key, value in best.items():
        writer.writerow([key, value])
+
+print("Finished hyperopt. Best parameters are:")
+print(best)

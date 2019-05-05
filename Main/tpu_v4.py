@@ -183,7 +183,7 @@ class cnn_model:
 
     def train_on_tpu(self, epochs, batch_size, learning_rate, optimizer, loss, callbacks):
         self.model = tf.contrib.tpu.keras_to_tpu_model(self.model, strategy=tf.contrib.tpu.TPUDistributionStrategy(tf.contrib.cluster_resolver.TPUClusterResolver(self.tpu_instance_name)))
-        self.model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate, ), loss=tf.keras.losses.binary_crossentropy, metrics=['accuracy', f1_score])
+        self.model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate, ), loss=tf.keras.losses.binary_crossentropy, metrics=['sparse_categorical_accuracy', f1_score])
 
         # has to be optimised to really train a epoch with full data
         self.hist = self.model.fit_generator(
