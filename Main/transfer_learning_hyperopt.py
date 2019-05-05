@@ -27,7 +27,7 @@ def objective(params):
     t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
     x_train = t_net.cache_transfer_data(x_data, img_group_name="x_train_T6")
     start = timer()
-    t_net.train(x_train, y_train, epochs=EPOCHS, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
+    t_net.train(x_train, y_train, epochs=EPOCHS, batch_size=256, verbose=True, tb_logs_dir="/log_files/transfer_net/")
     run_time = timer() - start
 
     val_loss = t_net.hist.history["val_loss"][-1]

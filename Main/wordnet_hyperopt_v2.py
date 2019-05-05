@@ -44,7 +44,7 @@ for label_amount in tqdm(n_label_list):
     x_train_df = pd.read_csv(FOLDER_PATH_SAVE + "/train_{}".format(label_amount))
     x_test_df = pd.read_csv(FOLDER_PATH_SAVE + "/test_{}".format(label_amount))
 
-    ### approach 2: regression with basic features
+    ### approach 1: regression with basic features
     x_train_arr = np.array(x_train_df.loc[:,basic_feats])
     x_test_arr = np.array(x_test_df.loc[:,basic_feats])
     # train regression
@@ -59,7 +59,7 @@ for label_amount in tqdm(n_label_list):
         writer.writerow(["Regression_basic",label_amount, train_acc, train_f1, test_acc, test_f1, conf_m[0], conf_m[1], conf_m[2], conf_m[3]])
 
 
-    ### approach 3: regression with wordnet features
+    ### approach 2: regression with wordnet features
     x_train_arr2 = np.array(x_train_df.loc[:,wordnet_feats])
     x_test_arr2 = np.array(x_test_df.loc[:,wordnet_feats])
     # train regression
@@ -74,7 +74,7 @@ for label_amount in tqdm(n_label_list):
         writer.writerow(["Regression_wordnet",label_amount, train_acc, train_f1, test_acc, test_f1, conf_m[0], conf_m[1], conf_m[2], conf_m[3]])
 
 
-    ### approach 4: using all features
+    ### approach 3: using all features
     x_train_arr3 = np.array(x_train_df)
     x_test_arr3 = np.array(x_test_df)
     # train regression
@@ -89,8 +89,8 @@ for label_amount in tqdm(n_label_list):
         writer.writerow(["Regression_all_feats",label_amount, train_acc, train_f1, test_acc, test_f1, conf_m[0], conf_m[1], conf_m[2], conf_m[3]])
 
 
-    ### approach 5: train regression
-    lasso = Logistic_regression()
+    ### approach 4: train regression
+    lasso = Lasso_regression()
     lasso.fit(x_train_arr3, y_train)
     lasso.find_best_thresh(x_train_arr3, y_train, optimize_for="f1", verbose=True)
     # evalaute

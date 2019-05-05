@@ -2,29 +2,9 @@ import numpy as np
 from transfer_learning import Transfer_net
 import sklearn
 import csv
-
-from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy #, join_npy_data
-
-
-# load data back
 from tqdm import tqdm
 
-def join_npy_data(list1):
-    x_train_c = []
-    x_test_c = []
-    y_train_c = []
-    y_test_c = []
-    for element in tqdm(list1):
-        x_train1, y_train1, x_test1, y_test1, conversion = np.load(element)
-        x_train_c.extend(x_train1)
-        y_train_c.extend(y_train1)
-        x_test_c.extend(x_test1)
-        y_test_c.extend(y_test1)
-    x_train_c = np.array(x_train_c)
-    x_test_c = np.array(x_test_c)
-    y_train_c = np.array(y_train_c)
-    y_test_c = np.array(y_test_c)
-    return(x_train_c, y_train_c, x_test_c, y_test_c, conversion)
+from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data
 
 
 CSV_OUT_FILE = 'master_out.csv'
@@ -109,11 +89,13 @@ x_train_imagenet_augmented, y_train_imagenet_augmented =  augment_data(x_train_i
 ################################################################################
 ################################ Own Network ###################################
 ################################################################################
+# load best params here
+
 def run_custom_network(object_name,data_type, augmented):
     m1 = cnn_model()
     m1.new_model(x_train_url, y_train_url, 2, config_v1)
     print("Training custom net for {}".format(object_name))
-    m1.train(epochs=2, batch_size=256, on_tpu=True, tb_logs_dir="gs://data-imr-unisg/logs/")
+    m1.train(epochs=2, batch_size=256, on_tpu=True, tb_logs_dir="./log_files/custom_net/")
     y_preds = m1.predict_classes(y_test)
     write_results_to_csv(x_train=x_train, x_test=x_test, predictions=y_preds, name=m1.name, object_name=object_name,
                          method_type="own Network", data_type=data_type, augmented=augmented)
@@ -121,6 +103,8 @@ def run_custom_network(object_name,data_type, augmented):
 ################################################################################
 ############################## Transfer Network ################################
 ################################################################################
+# load best params
+
 # have to change some parameters here
 def run_tranfer_network(object_name,data_type, augmented):
     t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", num_output_classes=2)
@@ -136,10 +120,60 @@ def run_tranfer_network(object_name,data_type, augmented):
 
 
 ################################################################################
-############################## Wordnet Version  ################################
+############################## Wordnet Versions  ###############################
 ################################################################################
 
+def run_wordnet_direct(object_name, data_type, augmented):
+    predictions = []
+    for img in tqdm(x_test):
+        predictions.extend([(identify_item(img, OBJECT, k_labels=label_amount))])
+    write_results_to_csv(x_train=[], x_test=x_test, predictions=y_preds, name="wordnet_direct_{object_name}".format(), object_name=object_name,
+                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
 
+def run_wordnet_indirect_v1(object_name, data_type, augmented):
+    # regression with basic features
+    x_train_arr = np.array(x_train_df.loc[:,basic_feats])
+    x_test_arr = np.array(x_test_df.loc[:,basic_feats])
+    # train regression
+    lr = Logistic_regression()
+    lr.fit(x_train_arr, y_train)
+    lr.find_best_thresh(x_train_arr, y_train, optimize_for="f1", verbose=True)
+    y_preds = lr.predict_classes(x_test)
+    write_results_to_csv(x_train=[], x_test=x_test, predictions=y_preds, name="wordnet_indirect_v1_{object_name}".format(), object_name=object_name,
+                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
+
+def run_wordnet_indirect_v2(object_name, data_type, augmented):
+    x_train_arr = np.array(x_train_df.loc[:,wordnet_feats])
+    x_test_arr = np.array(x_test_df.loc[:,wordnet_feats])
+    # train regression
+    lr = Logistic_regression()
+    lr.fit(x_train_arr, y_train)
+    lr.find_best_thresh(x_train_arr, y_train, optimize_for="f1", verbose=True)
+    y_preds = lr.predict_classes(x_test)
+    write_results_to_csv(x_train=[], x_test=x_test, predictions=y_preds, name="wordnet_indirect_v2_{object_name}".format(), object_name=object_name,
+                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
+
+def run_wordnet_indirect_v3(object_name, data_type, augmented):
+    x_train_arr = np.array(x_train_df)
+    x_test_arr = np.array(x_test_df)
+    # train regression
+    lr = Logistic_regression()
+    lr.fit(x_train_arr, y_train)
+    lr.find_best_thresh(x_train_arr, y_train, optimize_for="f1", verbose=True)
+    y_preds = lr.predict_classes(x_test)
+    write_results_to_csv(x_train=[], x_test=x_test, predictions=y_preds, name="wordnet_indirect_v3_{object_name}".format(), object_name=object_name,
+                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
+
+def run_wordnet_indirect_v4(object_name, data_type, augmented):
+    x_train_arr = np.array(x_train_df.loc[:,basic_feats])
+    x_test_arr = np.array(x_test_df.loc[:,basic_feats])
+    # train regression
+    lasso = Lasso_regression()
+    lasso.fit(x_train_arr3, y_train)
+    lasso.find_best_thresh(x_train_arr3, y_train, optimize_for="f1", verbose=True)
+    y_preds = lr.predict_classes(x_test)
+    write_results_to_csv(x_train=[], x_test=x_test, predictions=y_preds, name="wordnet_indirect_lasso_{object_name}".format(), object_name=object_name,
+                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
 
 
 

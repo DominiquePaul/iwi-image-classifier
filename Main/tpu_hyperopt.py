@@ -55,7 +55,7 @@ def objective(params):
 
     # adding lines to csv
     with open(out_file, 'a') as csv_file:
-        writer = csv.writer(of_connection)
+        writer = csv.writer(csv_file)
         writer.writerow(output_vals)
 
     return {"loss": val_loss,
