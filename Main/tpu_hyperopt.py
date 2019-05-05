@@ -37,10 +37,8 @@ with open(out_file, 'w') as csv_file:
 
 # hyperparameter optimization with hyperopt
 def objective(params):
-    print(params)
     m_opt=cnn_model()
     m_opt.new_model(x_train, y_train, 2, params)
-    print(m_opt.model.summary())
     start = timer()
     # add a special logs directory to see what is happening during each iteration
     m_opt.train(on_tpu=True, epochs=100, batch_size=256, tb_logs_dir="gs://data-imr-unisg/logs_hyperopt/")
