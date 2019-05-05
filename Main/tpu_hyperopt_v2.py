@@ -21,12 +21,6 @@ MAX_EVALS = 20
 data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split0.npy']
 x_train, y_train, x_test, y_test , conversion = join_npy_data(data_url, gcp_source=True)
 
-data =["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
-x_train, y_train, x_test, y_test , conversion = join_npy_data(data, gcp_source=False)
-
-len(x_train)//100
-
-
 # File to save first results
 out_file = 'out_files/custom_nn_hyperopt.csv'
 with open(out_file, 'w') as csv_file:
