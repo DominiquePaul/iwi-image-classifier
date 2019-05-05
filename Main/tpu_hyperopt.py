@@ -31,9 +31,8 @@ with open(out_file, 'w') as csv_file:
     writer = csv.writer(csv_file)
     # Write the headers to the file
     writer.writerow(['conv_layers', 'conv_filters', 'dense_layers', 'dense_neurons',
-                    'dropout_rate_dense', 'learning_rate', 'activation_fn', 'run_time',
-                    'val_loss', 'val_accuracy','val_f1', 'train_loss', 'train_accuracy',
-                    'train_f1'])
+                    'dropout_rate_dense', 'learning_rate', 'run_time', 'val_loss',
+                    'val_accuracy','val_f1', 'train_loss', 'train_accuracy', 'train_f1'])
 
 # hyperparameter optimization with hyperopt
 def objective(params):
@@ -51,7 +50,7 @@ def objective(params):
     train_f1 = m_opt.hist.history["f1_score"][-1]
 
     output_vals = [params["conv_layers"], params["conv_filters"], params["dense_layers"], params["dense_neurons"],
-                params["dropout_rate_dense"], params["learning_rate"], params["activation_fn"],
+                params["dropout_rate_dense"], params["learning_rate"],
                 run_time, val_loss, val_accuracy, val_f1, train_loss, train_accuracy, train_f1]
 
     # adding lines to csv
