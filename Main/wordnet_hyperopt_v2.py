@@ -16,8 +16,8 @@ from regressionclass import Logistic_regression, Lasso_regression
 # folder where different label evaluations are saved
 FOLDER_PATH_SAVE = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/wnet_hyperopt_datasets"
 # path with the industry dict folders
-INDUSTRY_DICT_FOLDER_PATH = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/industry_dicts/"
-ind_labels = load_industry_labels(folder_path=INDUSTRY_DICT_FOLDER_PATH, file_name="selection_AutomobileManufacturers.csv")
+ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
+
 OBJECT = "car"
 automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
 x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)

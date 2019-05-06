@@ -145,8 +145,7 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
 ################################################################################
 OBJECT_NAME = "car"
 DATA_FOLDER_PATH = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data"
-INDUSTRY_DICT_FOLDER_PATH = os.path.join(DATA_FOLDER_PATH, "industry_dicts/")
-ind_labels = load_industry_labels(folder_path=INDUSTRY_DICT_FOLDER_PATH, file_name="selection_AutomobileManufacturers.csv")
+ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
 
 x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files4/car_final_testing_dataset.npy"))
 

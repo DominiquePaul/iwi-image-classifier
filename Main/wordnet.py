@@ -42,8 +42,7 @@ inception.maybe_download()
 model = inception.Inception()
 
 # load dictionary
-def load_industry_labels(folder_path, file_name):
-    file_path = os.path.join(folder_path, file_name)
+def load_industry_labels(file_path):
     ind_df = pd.read_csv(file_path)
     return ind_df.labelname
 
@@ -164,14 +163,12 @@ FULL_BLOWN = True
 
 if __name__ == "__main__":
 
-    # path with the industry dict folders
-    INDUSTRY_DICT_FOLDER_PATH = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/industry_dicts/"
-
     # folder where different label evaluations are saved
     FOLDER_PATH_SAVE = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/temp_data_files"
 
     OBJECT = "car"
-    ind_labels = load_industry_labels(file_name="selection_AutomobileManufacturers.csv")
+    ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
+
 
     # non_augmented
     automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
