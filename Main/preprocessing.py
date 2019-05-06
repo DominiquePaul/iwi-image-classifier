@@ -574,7 +574,7 @@ def join_npy_data(list1, training_data_only):
     y_val_list = []
     for element in tqdm(list1):
         if "gs://" in element:
-            data_package = np_load_from_gcp(f)
+            data_package = np_load_from_gcp(element)
         else:
             data_package = np.load(element)
         if training_data_only is True:
