@@ -1,4 +1,4 @@
-dropout_rate,0.6873658769627333
-layers,39.0
-learning_rate,0.004563871477283107
-neurons,34.0
+dropout_rate,0.6123023778246072
+layers,31.0
+learning_rate,1.3565033433325172e-06
+neurons,44.0

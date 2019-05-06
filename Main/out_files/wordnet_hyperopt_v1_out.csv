@@ -1,10 +1,8 @@
 approach_name,label_amount,train_acc,train_f1,test_acc,test_f1,TP,FP,FN,TN
 direct approach,3,,,0.484,0.516,71,4,172,94
 direct approach,5,,,0.607,0.672,70,5,129,137
-direct approach,8,,,0.718,0.79,64,11,85,181
 direct approach,10,,,0.765,0.831,64,11,69,197
 direct approach,15,,,0.809,0.868,62,13,52,214
-direct approach,20,,,0.818,0.878,56,19,43,223
 direct approach,25,,,0.824,0.885,51,24,36,230
 direct approach,50,,,0.845,0.905,37,38,15,251
 direct approach,75,,,0.83,0.899,26,49,9,257

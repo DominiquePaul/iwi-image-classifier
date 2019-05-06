@@ -232,9 +232,91 @@ def save_to_numpy(folder_path, files, img_names, object):
         np.save(path, file_bundle_out)
         print("File package {} out of {} saved successfully".format(i+1, len(files)), end="\r")
 
+def split_arrays(splits, arrays):
+    assert sum(splits) <= 1
+    if isinstance(arrays, np.ndarray) is False:
+        arrays = np.array(arrays)[:-1]
+    if isinstance(splits, np.ndarray) is False:
+        splits = np.array(splits)
+    total_length = len(arrays[0])
+    p = np.random.permutation(total_length)
+    splits=splits*total_length
+    splits = np.floor(splits).cumsum().astype(int)
+    splits[-1]=total_length
+    splits = np.insert(splits, 0, 0)
+
+    list_of_arrays = []
+    for array in arrays:
+        if len(array) == 0:
+            list_of_arrays.extend([None]*(len(splits)-1))
+        else:
+            array = array[p]
+            array_list = []
+            for i in range(len(splits)-1):
+                array_list.extend([array[splits[i]:splits[i+1]]])
+            list_of_arrays.extend([array_list])
+    return np.array(list_of_arrays)
+
+def save_to_numpy_with_labels_v2(folder_path, files, labels, object, augment_training_data, train_val_test_split, file_names=None):
+    labels, label_index = factorize_labels(labels)
+    if file_names is None:
+        file_names = np.array([None]*len(files))
+    if train_val_test_split:
+        [x,y,names] = split_arrays([0.7,0.2,0.1], [files,labels,file_names,label_index]) # work around
+        [x_train, x_val, x_test] = x
+        [y_train, y_val, y_test] = y
+        [names_train, names_val, names_test] = names
+    else:
+        x_train=files
+        y_train=labels
+        names_train=file_names
+
+    x_train, y_train = balance_dataset(x_train, y_train)
+
+    if augment_training_data:
+        x_train, y_train = augment_data(x_train, y_train, shuffle=True)
+
+    # checking whether the file size is larger than 4 gigabytes (*1.3 for margin of error)
+    if train_val_test_split:
+        approx_file_size = (x_train[0].nbytes + y_train[0].nbytes) * (len(x_train) + len(x_val)) * 1.3
+    else:
+        approx_file_size = (x_train[0].nbytes + y_train[0].nbytes) * len(x_train) * 1.3
+    gb = approx_file_size / 1.08e+9 # approximate conversion rate of byte to GB
+    splits = int(np.ceil(gb)) # two gb is the max size for saving a np array to disk on mac as of python y 3.6.8, so we choose a convenient cap of approx one gb
+    print("splits needed: {}".format(splits))
+
+    x_train = split_array(x_train, splits)
+    y_train = split_array(y_train, splits)
+    names_train = split_array(names_train, splits)
+    if train_val_test_split:
+        x_val = split_array(x_val, splits)
+        y_val = split_array(y_val, splits)
+        names_val = split_array(names_val, splits)
+
+    if train_val_test_split:
+        path_testing_set = os.path.join(folder_path, object + "_final_testing_dataset")
+        final_testing_set = np.array([x_test, y_test, names_test, label_index])
+        np.save(path_testing_set, final_testing_set)
+
+    augmented_str = "augmented_" if augment_training_data else ""
+
+    for i in range(len(x_train)):
+        if train_val_test_split:
+            file_bundle_out = np.array([x_train[i], y_train[i], x_val[i], y_val[i], label_index])
+            path = os.path.join(folder_path, object + "_image_package_train_val_split_" + augmented_str + str(i))
+        else:
+            file_bundle_out = np.array([x_train[i], y_train[i], label_index])
+            path = os.path.join(folder_path, object + "_image_package_" + augmented_str + str(i))
+        np.save(path, file_bundle_out)
+        print("File package {} out of {} saved successfully".format(i+1, len(x_train)), end="\r")
+
 def save_to_numpy_with_labels(folder_path, files, labels, object, augment_training_data, train_val_test_split):
     labels, label_index = factorize_labels(labels)
     if train_val_test_split:
+        # p = np.random.permutation(len(x_trai))
+        images_v2 = images_v2[p]
+        labels_v2 = labels_v2[p]
+
         x_train, x_test, y_train, y_test = train_test_split(files, labels, test_size=0.1, random_state=GLOBAL_RANDOM_STATE)
         x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.2, random_state=GLOBAL_RANDOM_STATE)
     else:
@@ -480,26 +562,31 @@ def create_imagenet_dataset_random(size, max_synset_imgs, forbidden_synset, excl
                 break
     return np.array(image_list)
 
-def join_npy_data(list1, gcp_source=False):
-    x_train_c = []
-    x_test_c = []
-    y_train_c = []
-    y_test_c = []
+def join_npy_data(list1, training_data_only, gcp_source=False):
+    x_train_list = []
+    x_val_list = []
+    y_train_list = []
+    y_val_list = []
     for element in tqdm(list1):
         if gcp_source:
             f = BytesIO(file_io.read_file_to_string(element, binary_mode=True))
-            x_train1, y_train1, x_test1, y_test1, conversion = np.load(f)
+            data_package = np.load(f)
         else:
-            x_train1, y_train1, x_test1, y_test1, conversion = np.load(element)
-        x_train_c.extend(x_train1)
-        y_train_c.extend(y_train1)
-        x_test_c.extend(x_test1)
-        y_test_c.extend(y_test1)
-    x_train_c = np.array(x_train_c)
-    x_test_c = np.array(x_test_c)
-    y_train_c = np.array(y_train_c)
-    y_test_c = np.array(y_test_c)
-    return(x_train_c, y_train_c, x_test_c, y_test_c, conversion)
+            data_package = np.load(element)
+        if training_data_only is True:
+            x_train, y_train, conversion = data_package
+        else:
+            x_train, y_train, x_val, y_val, conversion = data_package
+            y_train_list.extend(y_train)
+            y_val_list.extend(y_val)
+        x_train_list.extend(x_train)
+        x_val_list.extend(x_val)
+
+    if training_data_only is True:
+        data_out = [np.array(x_train_list), np.array(y_train_list), conversion]
+    else:
+        data_out = [np.array(x_train_list), np.array(y_train_list), np.array(x_val_list), np.array(y_val_list), conversion]
+    return data_out
 
 
 
@@ -514,13 +601,9 @@ Then:
 
 if __name__ == "__main__":
 
-    target_np_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files2"
+    np.random.seed(GLOBAL_RANDOM_STATE)
+    target_np_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files4"
 
-    ##############################
-    ### load images with label ###
-    ##############################
-
-    # for cars
     car_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/car/car",
                         "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/car/no_car"]
 
@@ -528,25 +611,36 @@ if __name__ == "__main__":
     car_names_raw, car_images = load_images(car_image_folders)
     car_labels = read_label_json(car_json_folder)
     car_names, car_files = return_labelled_images(car_labels, car_names_raw, car_images)
-    save_to_numpy_with_labels(target_np_folder, car_files, car_names["label"], "car", augment_training_data=False, train_val_test_split=True)
 
-
-    #################################
-    ### load images without label ###
-    #################################
-    # save_to_numpy(folder_path=target_np_folder,
-    #             img_names=car_names_raw["file_name"],
-    #             files=car_images,
-    #             object="testing_data")
+    save_to_numpy_with_labels_v2(target_np_folder, car_files, car_names["label"], "car", augment_training_data=False, train_val_test_split=True, file_names=car_names["file_name"])
+    save_to_numpy_with_labels_v2(target_np_folder, car_files, car_names["label"], "car", augment_training_data=True, train_val_test_split=True, file_names=car_names["file_name"])
 
 
 
 
 
+# ################################
+# ## load images without label ###
+# ################################
+# save_to_numpy(folder_path=target_np_folder,
+#             img_names=car_names_raw["file_name"],
+#             files=car_images,
+#             object="testing_data")
+#
+#
+#
+#
 
-
-
-
+#
+# np.array([a,b,c])
+#
+# a = [1,2,3,4,5,6,7,8]
+# b = [9,10,11,12,13,14,15,16]
+# c = [None]*8
+# np.array([a,b,c])
+#
+# # c = ["a","b","c","d","e","f","g","h"]
+# split_arrays([0.7,0.2,0.1], [a,b,c])
 
 
 
@@ -610,5 +704,11 @@ for i in range(len(food_files)):
 
 ### create a basic dataframe for testing purposes
 pd.DataFrame(data=[[1,2],[3,4]], columns=["hello", "estragon"]).reset_index()
+
+
+a = [1,2,3,4,5,6,7,8]
+b = [9,10,11,12,13,14,15,16]
+[[a1, a2, a3],[b1,b2,b3]] = split_arrays([0.7,0.2,0.1], [a,b])
+
 
 """

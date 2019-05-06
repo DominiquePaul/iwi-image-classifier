@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from os.path import dirname
 from sklearn import metrics
+import pandas as pd
 
 from preprocessing import join_npy_data
 from wordnet import load_industry_labels, create_feature_df
@@ -24,11 +25,11 @@ x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 n_label_list = [3, 5, 8, 10, 15, 20, 25, 50]
 
 # transform or load the data if necessary
-for label_amount in tqdm(n_label_list):
-    x_train_df = create_feature_df(imgs=x_train, object_name=OBJECT, ind_labels=ind_labels, k_labels=label_amount)
-    x_test_df = create_feature_df(imgs=x_test, object_name=OBJECT, ind_labels=ind_labels, k_labels=label_amount)
-    x_train_df.to_csv(FOLDER_PATH_SAVE + "/train_{}".format(label_amount))
-    x_test_df.to_csv(FOLDER_PATH_SAVE + "/test_{}".format(label_amount))
+# for label_amount in tqdm(n_label_list):
+#     x_train_df = create_feature_df(imgs=x_train, object_name=OBJECT, ind_labels=ind_labels, k_labels=label_amount)
+#     x_test_df = create_feature_df(imgs=x_test, object_name=OBJECT, ind_labels=ind_labels, k_labels=label_amount)
+#     x_train_df.to_csv(FOLDER_PATH_SAVE + "/train_{}".format(label_amount))
+#     x_test_df.to_csv(FOLDER_PATH_SAVE + "/test_{}".format(label_amount))
 
 basic_feats = ["max_score", "product_ref_count", "product_ref_sum", "product_reference"]
 wordnet_feats = ["product_count_wordnet", "maxscorevalue_wordnet", "product_sum_wordnet"]

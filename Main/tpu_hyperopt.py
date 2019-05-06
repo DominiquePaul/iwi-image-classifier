@@ -18,7 +18,7 @@ from preprocessing import join_npy_data
 
 MAX_EVALS = 20
 
-data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split0.npy']
+data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split_0.npy']
 x_train, y_train, x_test, y_test , conversion = join_npy_data(data_url, gcp_source=True)
 
 # data =["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
@@ -77,7 +77,7 @@ best = fmin(fn = objective, space = space, algo = tpe.suggest,
             max_evals = MAX_EVALS, trials = Trials())
 
 # write best parameters as to disk
-with open('out_files/best_custom_nn_parameters.csv', 'w') as csv_file:
+with open('./out_files/best_custom_nn_parameters.csv', 'w') as csv_file:
     writer = csv.writer(csv_file)
     for key, value in best.items():
        writer.writerow([key, value])

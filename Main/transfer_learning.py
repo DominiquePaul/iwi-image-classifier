@@ -61,7 +61,6 @@ class Transfer_net:
         self.backend_model = inception.Inception()
         self.folder_path = folder_path
         self.num_output_classes = num_output_classes
-        self.learning_rate = 1e-06
         self.loss = "binary_crossentropy"
 
     def cache_transfer_data(self, images, img_group_name):
@@ -78,16 +77,16 @@ class Transfer_net:
         """
         model = keras.Sequential()
 
-        for i in range(layers):
-            model.add(keras.layers.Dense(neurons, activation="relu"))
+        for i in range(int(layers)):
+            model.add(keras.layers.Dense(int(neurons), activation="relu"))
             model.add(keras.layers.Dropout(dropout_rate))
 
         model.add(keras.layers.Dense(self.num_output_classes, activation='softmax'))
         self.model = model
 
 
-    def train(self, x_train, y_train, epochs, batch_size, tb_logs_dir=None, verbose=False):
-        early_stopping_callback = EarlyStopping(monitor="val_loss", patience=15)
+    def train(self, x_train, y_train, learning_rate, epochs, batch_size, tb_logs_dir=None, verbose=False):
+        early_stopping_callback = EarlyStopping(monitor="val_loss", patience=25)
         callbacks = [early_stopping_callback]
 
         if bool(tb_logs_dir):
@@ -101,7 +100,7 @@ class Transfer_net:
         y_train = tf.keras.utils.to_categorical(y_train, 2)
         y_val = tf.keras.utils.to_categorical(y_val, 2)
 
-        self.model.compile(loss=self.loss, optimizer=keras.optimizers.Adam(lr=self.learning_rate), metrics=['accuracy', f1_score])
+        self.model.compile(loss=self.loss, optimizer=keras.optimizers.Adam(lr=learning_rate), metrics=['accuracy', f1_score])
         self.hist = self.model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size,
                        verbose=verbose, callbacks=callbacks, validation_data=(x_val, y_val))
 
@@ -133,7 +132,7 @@ if __name__ == "__main__":
     x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 
     t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", 2)
-    t_net.create_network(layers=5, neurons=100, dropout_rate=0.5)
+    t_net.create_network(layers=5, neurons=100, dropout_rate=0.5, learning_rate=1e-06)
     x_train = t_net.cache_transfer_data(x_train, img_group_name="x_train1")
     t_net.train(x_train, y_train, epochs=100, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
 

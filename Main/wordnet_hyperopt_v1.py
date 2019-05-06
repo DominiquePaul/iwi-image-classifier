@@ -20,12 +20,12 @@ OBJECT = "car"
 automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
 _, _, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 
-out_file = 'out_files/wordnet_hyperopt_v1_out.csv'
+out_file = 'out_files/wordnet_hyperopt_v1_2_out.csv'
 with open(out_file, 'w') as of_connection:
     writer = csv.writer(of_connection)
     writer.writerow(['approach_name','label_amount','train_acc', 'train_f1', 'test_acc','test_f1', 'TP', 'FP', 'FN', 'TN'])
 
-n_label_list = [3, 5, 8, 10, 15, 20, 25, 50, 75, 100, 125, 150, 175, 200]
+n_label_list = [3,5,10,15,25,50,75,100,125]
 
 for label_amount in tqdm(n_label_list):
 
