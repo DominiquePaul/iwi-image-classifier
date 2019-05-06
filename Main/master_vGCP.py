@@ -144,7 +144,7 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
 ########################### Run through all tests ##############################
 ################################################################################
 OBJECT_NAME = "car"
-DATA_FOLDER_PATH = "gs://data-imr-unisg/data_main/"
+DATA_FOLDER_PATH = "gs://data-imr-unisg/main_data/"
 
 ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
 
