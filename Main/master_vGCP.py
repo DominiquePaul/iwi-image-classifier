@@ -161,7 +161,7 @@ run_wordnet_direct("car", "custom", "Unaugmented")
 
 # run 1/4: own images not augmented
 automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_0.npy")]
-x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
+x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False, gcp_source=True)
 
 run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
 run_tranfer_network(OBJECT_NAME, "custom", "Unaugmented")
@@ -177,7 +177,7 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image
                     os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_4.npy"),
                     os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_5.npy"),
                     os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_6.npy")]
-x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
+x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False, gcp_source=True)
 
 run_custom_network(OBJECT_NAME, "custom", "Augmented")
 run_tranfer_network(OBJECT_NAME, "custom", "Augmented")
