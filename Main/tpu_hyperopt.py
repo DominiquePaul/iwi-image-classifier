@@ -40,7 +40,7 @@ def objective(params):
     m_opt.new_model(x_train, y_train, 2, params)
     start = timer()
     # add a special logs directory to see what is happening during each iteration
-    m_opt.train(on_tpu=True, epochs=100, batch_size=256, tb_logs_dir="gs://data-imr-unisg/logs_hyperopt/")
+    m_opt.train(on_tpu=True, epochs=1000, batch_size=256, tb_logs_dir="gs://data-imr-unisg/logs_hyperopt/")
     run_time = timer() - start
     val_loss = m_opt.hist.history["val_loss"][-1]
     val_accuracy = m_opt.hist.history["val_sparse_categorical_accuracy"][-1]
