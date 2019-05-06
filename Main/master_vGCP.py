@@ -28,7 +28,7 @@ from timeit import default_timer as timer
 from tpu import cnn_model
 from transfer_learning import Transfer_net
 from wordnet import create_feature_df, load_industry_labels, identify_item
-from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data
+from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, np_load_from_gcp
 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
@@ -149,7 +149,7 @@ DATA_FOLDER_PATH = "gs://data-imr-unisg/main_data/"
 ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
 
 
-x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files/car_final_testing_dataset.npy"))
+x_test, y_test, names, _  = np_load_from_gcp(os.path.join(DATA_FOLDER_PATH, "np_files/car_final_testing_dataset.npy"))
 
 x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
 x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
@@ -161,7 +161,7 @@ run_wordnet_direct("car", "custom", "Unaugmented")
 
 # run 1/4: own images not augmented
 automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_0.npy")]
-x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False, gcp_source=True)
+x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
 run_tranfer_network(OBJECT_NAME, "custom", "Unaugmented")
@@ -177,7 +177,7 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image
                     os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_4.npy"),
                     os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_5.npy"),
                     os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_6.npy")]
-x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False, gcp_source=True)
+x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Augmented")
 run_tranfer_network(OBJECT_NAME, "custom", "Augmented")

@@ -562,15 +562,19 @@ def create_imagenet_dataset_random(size, max_synset_imgs, forbidden_synset, excl
                 break
     return np.array(image_list)
 
-def join_npy_data(list1, training_data_only, gcp_source=False):
+def np_load_from_gcp(link):
+    f = BytesIO(file_io.read_file_to_string(link, binary_mode=True))
+    data = np.load(f)
+    return data
+
+def join_npy_data(list1, training_data_only):
     x_train_list = []
     x_val_list = []
     y_train_list = []
     y_val_list = []
     for element in tqdm(list1):
-        if gcp_source:
-            f = BytesIO(file_io.read_file_to_string(element, binary_mode=True))
-            data_package = np.load(f)
+        if "gs://" in element:
+            data_package = np_load_from_gcp(f)
         else:
             data_package = np.load(element)
         if training_data_only is True:
