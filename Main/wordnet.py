@@ -21,6 +21,8 @@ to do:
     -iterate over all datasets
 """
 
+import nltk
+nltk.download("wordnet")
 from nltk.corpus import wordnet
 import numpy as np
 import pandas as pd
