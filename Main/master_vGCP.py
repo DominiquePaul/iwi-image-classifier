@@ -30,11 +30,11 @@ from transfer_learning import Transfer_net
 from wordnet import create_feature_df, load_industry_labels, identify_item
 from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data
 
-sys.path.append(dirname("/Users/dominiquepaul/xBachelorArbeit/Spring19/Bachelor-arbeit/Main/modules/"))
+sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
-EVAL_OUT_FILE = './out_files/master_out.csv'
-PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions.csv'
+EVAL_OUT_FILE = './out_files/master_out1.csv'
+PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions1.csv'
 
 
 ################################################################################
@@ -144,11 +144,11 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
 ########################### Run through all tests ##############################
 ################################################################################
 OBJECT_NAME = "car"
-DATA_FOLDER_PATH = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data"
+DATA_FOLDER_PATH = "gs://data-imr-unisg/data_main/"
 INDUSTRY_DICT_FOLDER_PATH = os.path.join(DATA_FOLDER_PATH, "industry_dicts/")
 ind_labels = load_industry_labels(folder_path=INDUSTRY_DICT_FOLDER_PATH, file_name="selection_AutomobileManufacturers.csv")
 
-x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files4/car_final_testing_dataset.npy"))
+x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files/car_final_testing_dataset.npy"))
 
 x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
 x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
@@ -159,7 +159,7 @@ run_wordnet_direct("car", "custom", "Unaugmented")
 
 
 # run 1/4: own images not augmented
-automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_0.npy")]
+automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_0.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
@@ -169,13 +169,13 @@ run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
 
 # run 2/4: own images augmented
-automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_0.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_1.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_2.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_3.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_4.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_5.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_6.npy")]
+automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_0.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_1.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_2.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_3.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_4.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_5.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_train_val_split_augmented_6.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Augmented")

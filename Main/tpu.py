@@ -175,9 +175,13 @@ class cnn_model:
 
 
     def train_on_cpu(self, epochs, batch_size, learning_rate, optimizer, loss, callbacks, verbose):
+        print("converting y_train")
         self.y_train = tf.keras.utils.to_categorical(self.y_train, 2 )
+        print("converting y_val")
         self.y_val = tf.keras.utils.to_categorical(self.y_val, 2 )
+        print("compiling")
         self.model.compile(loss=loss, optimizer=optimizer, metrics=['accuracy', f1_score])
+        print("training")
         self.hist = self.model.fit(self.x_train, self.y_train, epochs=epochs, batch_size=batch_size,
                        verbose=verbose, callbacks=callbacks, validation_data=(self.x_val, self.y_val))
 
@@ -238,7 +242,6 @@ if __name__ == "__main__":
         "dense_neurons": 20,
         "dropout_rate_dense": 0.2,
         "learning_rate": 1e-04,
-        "activation_fn": "relu"
     }
 
     # offline
