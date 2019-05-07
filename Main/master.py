@@ -148,20 +148,24 @@ DATA_FOLDER_PATH = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data"
 ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
 
 x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files4/car_final_testing_dataset.npy"))
+x_test = x_test[:10]
+y_test = y_test[:10]
 
-x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
-x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
+# x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
+# x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
 
 ALL_PREDICTIONS_DF = pd.DataFrame({"names":names})
 # only method that doesnt require a training set
-run_wordnet_direct("car", "custom", "Unaugmented")
+# run_wordnet_direct("car", "custom", "Unaugmented")
 
 
 # run 1/4: own images not augmented
 automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_0.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
+x_train = x_train[:10]
+x_test = x_test[:10]
 
-run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
+# run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
 run_tranfer_network(OBJECT_NAME, "custom", "Unaugmented")
 run_wordnet_indirect_v3(OBJECT_NAME, "custom", "Unaugmented")
 run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")

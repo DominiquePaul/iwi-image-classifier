@@ -63,3 +63,6 @@ indirect_wordnet_v3_50_labels_ImageNet_Unaugmented_car,car,oob_network_eval,Imag
 direct_wordnet_100_labels_custom_Unaugmented_car,car,Transfer Network,custom,no,0,172,63.19745160199818,0.8081395348837209,0.888888888888889,7,32,1,132
 direct_wordnet_100_labels_custom_Unaugmented_car,car,Transfer Network,custom,no,0,172,60.78223295600037,0.8081395348837209,0.888888888888889,7,32,1,132
 direct_wordnet_100_labels_custom_Unaugmented_car,car,Transfer Network,custom,no,0,172,48.81575102900388,0.8081395348837209,0.888888888888889,7,32,1,132
+direct_wordnet_100_labels_custom_Unaugmented_car,car,Transfer Network,custom,no,0,10,4.772986160998698,0.9,0.9473684210526316,0,1,0,9
+transfer_net_custom_Unaugmented_car,car,Transfer Network,custom,no,10,10,13.697464052995201,0.9,0.9473684210526316,0,1,0,9
+transfer_net_custom_Unaugmented_car,car,Transfer Network,custom,no,10,10,11.23875986499479,0.9,0.9473684210526316,0,1,0,9

@@ -186,8 +186,8 @@ run_tranfer_network(OBJECT_NAME, "custom", "Augmented")
 
 
 # run 3/4: imagenet images not augmented
-x_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_x.npy"))
-y_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_y.npy"))
+x_train = np.load(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_x.npy"))
+y_train = np.load(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_y.npy"))
 
 run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 run_tranfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
