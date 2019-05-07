@@ -87,7 +87,7 @@ def run_custom_network(object_name, data_type, augmented):
 def run_tranfer_network(object_name,data_type, augmented):
     name = "transfer_net_{}_{}_{}".format(data_type, augmented, object_name)
     start = timer()
-    t_net = Transfer_net("./temp/transfernet_files", num_output_classes=2)
+    t_net = Transfer_net("./transnet_files", num_output_classes=2)
     t_net.create_network(layers=31, neurons=44, dropout_rate=0.61)
     x_train_transfer = t_net.cache_transfer_data(x_train, img_group_name=name)
     print("Training transfer net for {}".format(object_name))
