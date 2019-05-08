@@ -28,7 +28,7 @@ from timeit import default_timer as timer
 from tpu import cnn_model
 from transfer_learning import Transfer_net
 from wordnet import create_feature_df, load_industry_labels, identify_item
-from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, np_load_from_gcp
+from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, np_load_from_gcp, augment_data
 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
