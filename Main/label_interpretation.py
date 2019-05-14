@@ -149,7 +149,7 @@ def find_possible_synonyms(word_list):
     synonyms = []
     for word in word_list:
         for synset in wordnet.synsets(word):
-            synonyms_2.extend(synset.lemma_names())
+            synonyms.extend(synset.lemma_names())
     return synonyms
 
 def identify_items(imgs, objects, k_labels, use_synonyms):
@@ -165,7 +165,7 @@ def identify_items(imgs, objects, k_labels, use_synonyms):
         predicted_words = [i.split(" ") for i in prediction_scores.keys()]
         predicted_words = [item for sublist in predicted_words for item in sublist]
         item_found = not set(predicted_words).isdisjoint(set(objects))
-        objects.extend(int(item_found))
+        predictions.extend([int(item_found)])
     return predictions
 
 
@@ -188,11 +188,11 @@ if __name__ == "__main__":
     #### approach 1 #####
     #####################
     # direct wordnet
-    automotive_pckgs = ["../Data/np_files/car_image_package_train_test_split0.npy"]
-    x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
+    automotive_pckgs = ["../Data/np_files4/car_image_package_train_val_split_0.npy"]
+    x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
     words_sought = ["cars","truck"]
-    predictions = identify_items(x_test, words_sought, k_labels=label_amount, use_synonyms=True)
+    predictions = identify_items(x_test[:2], words_sought, k_labels=5, use_synonyms=True)
 
 
     #####################
@@ -259,7 +259,7 @@ if __name__ == "__main__":
                                    object_name=OBJECT,
                                    ind_labels=ind_labels,
                                    k_labels=10,
-                                   basic_feats=True, 
+                                   basic_feats=True,
                                    ordnet_feats=True)
     # train regression
     lasso = Logistic_regression()

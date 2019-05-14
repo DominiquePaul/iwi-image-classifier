@@ -100,10 +100,8 @@ def run_transfer_network(object_name,data_type, augmented):
 
 def run_wordnet_direct(object_name, data_type, augmented):
     start = timer()
-    predictions = []
     global x_test
-    for img in tqdm(x_test):
-        predictions.extend([(identify_item(img, object_name, k_labels=100))])
+    predictions=identify_items(x_test, [object_name], k_labels=100, use_synonyms=True)
     run_time = timer() - start
     name = "direct_wordnet_100_labels_{}_{}_{}".format(data_type, augmented, object_name)
     df = write_outputs(x_train=x_train, x_test=x_test, predictions=predictions, run_time=run_time, name=name, object_name=object_name,
