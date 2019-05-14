@@ -181,7 +181,7 @@ class cnn_model:
         self.hist = self.model.fit(self.x_train, self.y_train, epochs=epochs, batch_size=batch_size,
                        verbose=verbose, callbacks=callbacks, validation_data=(self.x_val, self.y_val))
 
-    def train_on_tpu(self, tpu_instance_name, epochs, batch_size, optimizer, callbacks):
+    def train_on_tpu(self, tpu_instance_name, epochs, batch_size, callbacks):
         self.model = tf.contrib.tpu.keras_to_tpu_model(self.model, strategy=tf.contrib.tpu.TPUDistributionStrategy(tf.contrib.cluster_resolver.TPUClusterResolver(tpu_instance_name)))
         self.model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=self.learning_rate, ), loss=tf.keras.losses.sparse_categorical_crossentropy, metrics=['sparse_categorical_accuracy', f1_score])
 
