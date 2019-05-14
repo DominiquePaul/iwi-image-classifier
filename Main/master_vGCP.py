@@ -104,7 +104,7 @@ def run_wordnet_direct(object_name, data_type, augmented):
     predictions=identify_items(x_test, [object_name], k_labels=100, use_synonyms=True)
     run_time = timer() - start
     name = "direct_wordnet_100_labels_{}_{}_{}".format(data_type, augmented, object_name)
-    df = write_outputs(x_train=x_train, x_test=x_test, predictions=predictions, run_time=run_time, name=name, object_name=object_name,
+    df = write_outputs(x_train=[], x_test=[], predictions=predictions, run_time=run_time, name=name, object_name=object_name,
                          method_type="Transfer Network", data_type=data_type, augmented=augmented)
 
 def run_wordnet_indirect_v3(object_name, data_type, augmented):
@@ -134,7 +134,7 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
     y_preds = lasso.predict_classes(x_test_arr)
     run_time = timer() - start
     name = "indirect_wordnet_lasso_20_labels_{}_{}_{}".format(data_type, augmented, object_name)
-    write_outputs(x_train=[], x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
+    write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
                          method_type="oob_network_eval", data_type=data_type, augmented=augmented)
 
 
