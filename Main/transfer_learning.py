@@ -1,9 +1,3 @@
-"""
-to do :
-    * make the 'create_network' function for flexible
-
-"""
-
 import os
 import sys
 import numpy as np
@@ -19,12 +13,16 @@ from tensorflow.python.keras import backend as K
 
 sys.path.append(dirname("./modules/"))
 from preprocessing import join_npy_data
-import inception_edit_dom as inception
-from inception_edit_dom import transfer_values_cache, transfer_values
+import inception
+from inception import transfer_values_cache, transfer_values
 
 
 
 inception.maybe_download()
+
+"""
+add a reference for the three functions
+"""
 
 def precision(y_true, y_pred):
     """Precision metric.
@@ -57,24 +55,13 @@ def f1_score(y_true, y_pred):
     return (2 * p * r) / (p + r + K.epsilon())
 
 class Transfer_net:
-    def __init__(self, folder_path, num_output_classes):
+    def __init__(self):
         self.backend_model = inception.Inception()
-        self.folder_path = folder_path
-        self.num_output_classes = num_output_classes
-        self.loss = "binary_crossentropy"
 
-    def cache_transfer_data(self, images, img_group_name):
-        """Function that returns raw images into transfer values and saves them
-        """
-        cache_path = os.path.join(self.folder_path, img_group_name + ".npy")
-        transfer_values = transfer_values_cache(cache_path=cache_path,
-                                                images=images,
-                                                model=self.backend_model)
-        return transfer_values
-
-    def create_network(self, layers, neurons, dropout_rate):
+    def create_network(self, layers, neurons, dropout_rate, num_output_classes):
         """creates a network used to evaluate the transfer values
         """
+        self.num_output_classes = num_output_classes
         model = keras.Sequential()
 
         for i in range(int(layers)):
@@ -84,6 +71,22 @@ class Transfer_net:
         model.add(keras.layers.Dense(self.num_output_classes, activation='softmax'))
         self.model = model
 
+    def load_transfer_data(self, images):
+        """
+        Transforms image values into transfer values of the last layer of the inception network
+        """
+        transfer_values = transfer_values(images=images, model=self.backend_model)
+        return transfer_values
+
+    def load_or_cache_transfer_data(self, images, file_path):
+        """Function that returns raw images into transfer values and saves them
+        """
+        if file_path[-4:] != ".npy":
+            file_path = file_path + ".npy"
+        transfer_values = transfer_values_cache(cache_path=file_path,
+                                                images=images,
+                                                model=self.backend_model)
+        return transfer_values
 
     def train(self, x_train, y_train, learning_rate, epochs, batch_size, tb_logs_dir=None, verbose=False):
         early_stopping_callback = EarlyStopping(monitor="val_loss", patience=25)
@@ -97,12 +100,18 @@ class Transfer_net:
             callbacks += [tensorboard_callback]
 
         x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, train_size=0.8, random_state = 1)
-        y_train = tf.keras.utils.to_categorical(y_train, 2)
-        y_val = tf.keras.utils.to_categorical(y_val, 2)
+        y_train = tf.keras.utils.to_categorical(y_train, self.num_output_classes)
+        y_val = tf.keras.utils.to_categorical(y_val, self.num_output_classes)
 
-        self.model.compile(loss=self.loss, optimizer=keras.optimizers.Adam(lr=learning_rate), metrics=['accuracy', f1_score])
+        self.model.compile(loss="categorical_crossentropy", optimizer=keras.optimizers.Adam(lr=learning_rate), metrics=['accuracy', f1_score])
         self.hist = self.model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size,
                        verbose=verbose, callbacks=callbacks, validation_data=(x_val, y_val))
+
+    def predict(self, images):
+       if images.shape[1] != 2048:
+           images = transfer_values(images=images, model=self.backend_model)
+       preds = self.model.predict(images)
+       return preds
 
     def predict_classes(self, images):
         if images.shape[1] != 2048:
@@ -110,14 +119,14 @@ class Transfer_net:
         preds = self.model.predict_classes(images)
         return preds
 
-    def save_model(self, file_name):
-        file_path = os.path.join(self.folder_path, file_name + ".HDF5")
+    def save_model(self, file_path):
+        if file_path[-5:] != ".HDF5":
+            file_path += ".HDF5"
         tf.keras.models.save_model(self.model,
                                    file_path,
                                    overwrite=True,
                                    include_optimizer=False) # we dont need the optimizer as we only finished ready models
         print("Model was saved to {}".format(file_path))
-
 
     def load_model(self, file_path):
         self.model = tf.keras.models.load_model(file_path, compile=False)
@@ -128,16 +137,23 @@ class Transfer_net:
 if __name__ == "__main__":
 
     inception.maybe_download()
-    automotive_pckgs = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
-    x_train, y_train, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
+    file_path=['../Data/np_files4/car_image_package_train_val_split_0.npy']
+    x_train, y_train, x_test, y_test, conversion = join_npy_data(file_path, training_data_only=False)
 
-    t_net = Transfer_net("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/transfernet_files", 2)
-    t_net.create_network(layers=5, neurons=100, dropout_rate=0.5, learning_rate=1e-06)
-    x_train = t_net.cache_transfer_data(x_train, img_group_name="x_train1")
-    t_net.train(x_train, y_train, epochs=100, batch_size=256, verbose=True, tb_logs_dir="/Users/dominiquepaul/xBachelorArbeit/Spring19/logs")
+    x_train, y_train, x_test, y_test = x_train[:20], y_train[:20], x_test[:20], y_test[:20]
+    y_train[0] = 2
 
-    x_test = t_net.cache_transfer_data(x_test, img_group_name="x_test")
-    preds = t_net.predict_classes(x_test)
+    t_net = Transfer_net()
+    t_net.create_network(layers=5, neurons=100, dropout_rate=0.5, num_output_classes=3)
+    x_train = t_net.load_or_cache_transfer_data(x_train, file_path="../Data/transfernet_files/x_train1")
+    t_net.train(x_train, y_train, learning_rate=1e-06, epochs=5, batch_size=256, verbose=True, tb_logs_dir="../logs")
+
+    t_net.save_model("./ello_test_trans.HDF5")
+
+    t_net2 = Transfer_net()
+    t_net2.load_model("./ello_test_trans.HDF5")
+
+    preds = t_net2.predict_classes(x_test)
 
     sklearn.metrics.accuracy_score(y_test, preds)
     sklearn.metrics.f1_score(y_test, preds)

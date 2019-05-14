@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 from sklearn import metrics, linear_model
 from sklearn.preprocessing import StandardScaler
+import pickle
+
 
 class Logistic_regression:
 
@@ -18,10 +20,15 @@ class Logistic_regression:
         self.trained_vars = None
         self.best_thresh = 0.5
 
+    def maybe_convert_to_array(self, data):
+        if isinstance(data, np.ndarray) == False:
+            data = np.array(data)
+        return data
+
     def fit(self, x_train, y_train):
+        x_train = self.maybe_convert_to_array(x_train)
         model = sm.Logit(y_train,x_train)
         self.model = model.fit()
-        self.trained_vars = self.model.params
 
     def all_decision_thresholds(self, x_feats, y_true):
         preds = self.predict(x_feats)
@@ -36,6 +43,7 @@ class Logistic_regression:
         return overview_df
 
     def find_best_thresh(self, x_feats, y_true, optimize_for, verbose=False):
+        x_feats = self.maybe_convert_to_array(x_feats)
         overview_df = self.all_decision_thresholds(x_feats=x_feats, y_true=y_true)
         f1_max_index = overview_df["f1"].idxmax()
         f1_max_thresh = overview_df.loc[f1_max_index,"thresh"]
@@ -55,28 +63,38 @@ class Logistic_regression:
         else:
             raise ValueError("'optimize_for' has to be set to either 'f1' or 'accuracy'")
 
-    def reset(self):
-        self.trained_vars = None
+    def print_model_parameters(self):
+        print(self.model.params)
 
     def predict(self, x_test):
+        x_test = self.maybe_convert_to_array(x_test)
         preds = self.model.predict(x_test)
         return preds
 
     def predict_classes(self, x_test):
+        x_test = self.maybe_convert_to_array(x_test)
         preds = self.predict(x_test)
         predicted_classes = np.where(preds > self.best_thresh, 1, 0)
         return(predicted_classes)
 
     def evaluate(self, x_test, y_test, rounded_to=3):
+        x_test = self.maybe_convert_to_array(x_test)
         predictions = self.predict_classes(x_test)
         accuracy = metrics.accuracy_score(y_test, predictions)
         f1_metric = metrics.f1_score(y_test, predictions)
         [TP, FP], [FN, TN] = metrics.confusion_matrix(y_test, predictions)
         return(np.round(accuracy,rounded_to), np.round(f1_metric,rounded_to), (TP, FP, FN, TN))
 
+    def save_model(self, file_path):
+        pickle.dump(self.model, open(file_path, "wb" ))
+
+    def load_model(self, file_path):
+        self.model = pickle.load(open(file_path, "rb" ))
+
 class Lasso_regression(Logistic_regression):
 
     def fit(self, x_train, y_train):
+        x_train = self.maybe_convert_to_array(x_train)
         self.scaler = StandardScaler()
         self.scaler.fit(x_train)
         x_train = self.scaler.transform(x_train)
@@ -85,9 +103,16 @@ class Lasso_regression(Logistic_regression):
         self.trained_vars = self.model.get_params()
 
     def predict(self, x_test):
+        x_test = self.maybe_convert_to_array(x_test)
         x_test = self.scaler.transform(x_test)
         preds = self.model.predict(x_test)
         return preds
+
+    def save_model(self, file_path):
+        pickle.dump([self.model, self.scaler], open(file_path, "wb" ))
+
+    def load_model(self, file_path):
+        self.model, self.scaler = pickle.load(open(file_path, "rb" ))
 
 
 if __name__ == "__main__":
@@ -102,7 +127,11 @@ if __name__ == "__main__":
 
     x_train, x_test, y_train, y_test = train_test_split(inputs, outputs, train_size = 0.7)
 
-    rc = Logistic_regression()
+    rc = Lasso_regression()
     rc.fit(x_train,y_train)
-    rc.predict(x_train)
-    rc.evaluate(x_test,y_test)
+    rc.save_model("./test_model")
+    rc.find_best_thresh(x_train, y_train, optimize_for="f1", verbose=True)
+
+    rc2 = Lasso_regression()
+    rc2.load_model("./test_model")
+    rc2.predict(x_test)

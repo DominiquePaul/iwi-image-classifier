@@ -25,16 +25,16 @@ from tqdm import tqdm
 from os.path import dirname
 from timeit import default_timer as timer
 
-from tpu import cnn_model
+from cnn import cnn_model
 from transfer_learning import Transfer_net
-from wordnet import create_feature_df, load_industry_labels, identify_item
-from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, np_load_from_gcp, augment_data
+from label_interpretation import create_feature_df, load_industry_labels, identify_items
+from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, augment_data, load_from_gcp
 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
-EVAL_OUT_FILE = './out_files/master_out1.csv'
-PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions1.csv'
+EVAL_OUT_FILE = './out_files/master_out_car1.csv'
+PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions_car1.csv'
 
 
 ################################################################################
@@ -50,7 +50,7 @@ def write_results_to_csv(x_train, x_test, predictions, run_time, name, object_na
     # writes out all summarising results to a csv
     with open(EVAL_OUT_FILE, 'a') as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow([name, object_name, method_type, data_type, "no", len(x_train), len(x_test), run_time, accuracy_test, f1_score_test, TP, FP, FN, TN])
+        writer.writerow([name, object_name, method_type, data_type, augmented, len(x_train), len(x_test), run_time, accuracy_test, f1_score_test, TP, FP, FN, TN])
 
 def write_outputs(x_train, x_test, predictions, run_time, name, object_name, method_type, data_type, augmented):
     global ALL_PREDICTIONS_DF
@@ -75,7 +75,7 @@ def run_custom_network(object_name, data_type, augmented):
     m1 = cnn_model()
     m1.new_model(x_train, y_train, 2, own_network_config)
     print("Training custom net for {}".format(object_name))
-    m1.train(epochs=1000, batch_size=256, on_tpu=True, tb_logs_dir="./log_files/master_logs/", verbose=True)
+    m1.train(epochs=1000, batch_size=256, on_tpu="dominique-c-a-paul", tb_logs_dir="./log_files/master_logs/", verbose=True)
     y_preds = m1.predict_classes(x_test)
     run_time = timer() - start
     name = "own_network_{}_{}_{}".format(data_type, augmented, object_name)
@@ -84,15 +84,15 @@ def run_custom_network(object_name, data_type, augmented):
                          method_type="own Network", data_type=data_type, augmented=augmented)
 
 # have to change some parameters here
-def run_tranfer_network(object_name,data_type, augmented):
+def run_transfer_network(object_name,data_type, augmented):
     name = "transfer_net_{}_{}_{}".format(data_type, augmented, object_name)
     start = timer()
     t_net = Transfer_net("./transnet_files", num_output_classes=2)
     t_net.create_network(layers=31, neurons=44, dropout_rate=0.61)
-    x_train_transfer = t_net.cache_transfer_data(x_train, img_group_name=name)
+    x_train_transfer = t_net.load_or_cache_transfer_data(x_train, file_path="./transnet_files/"+name)
     print("Training transfer net for {}".format(object_name))
     t_net.train(x_train_transfer, y_train, learning_rate=1.36e-06, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./log_files/master_logs/")
-    x_test_transfer = t_net.cache_transfer_data(x_test, img_group_name="x_test")
+    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./transnet_files/x_test" )
     y_preds = t_net.predict_classes(x_test_transfer)
     run_time = timer() - start
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
@@ -106,7 +106,7 @@ def run_wordnet_direct(object_name, data_type, augmented):
         predictions.extend([(identify_item(img, object_name, k_labels=100))])
     run_time = timer() - start
     name = "direct_wordnet_100_labels_{}_{}_{}".format(data_type, augmented, object_name)
-    df = write_outputs(x_train=[], x_test=x_test, predictions=predictions, run_time=run_time, name=name, object_name=object_name,
+    df = write_outputs(x_train=x_train, x_test=x_test, predictions=predictions, run_time=run_time, name=name, object_name=object_name,
                          method_type="Transfer Network", data_type=data_type, augmented=augmented)
 
 def run_wordnet_indirect_v3(object_name, data_type, augmented):
@@ -121,7 +121,7 @@ def run_wordnet_indirect_v3(object_name, data_type, augmented):
     y_preds = lr.predict_classes(x_test_arr)
     run_time = timer() - start
     name = "indirect_wordnet_v3_50_labels_{}_{}_{}".format(data_type, augmented, object_name)
-    write_outputs(x_train=[], x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
+    write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
                          method_type="oob_network_eval", data_type=data_type, augmented=augmented)
 
 def run_wordnet_indirect_v4(object_name, data_type, augmented):
@@ -149,7 +149,7 @@ DATA_FOLDER_PATH = "gs://data-imr-unisg/main_data/"
 ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
 
 
-x_test, y_test, names, _  = np_load_from_gcp(os.path.join(DATA_FOLDER_PATH, "np_files/car_final_testing_dataset.npy"))
+x_test, y_test, names, _  = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "np_files/car_final_testing_dataset.npy"))
 
 x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
 x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
@@ -164,7 +164,7 @@ automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image_package_t
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
-run_tranfer_network(OBJECT_NAME, "custom", "Unaugmented")
+run_transfer_network(OBJECT_NAME, "custom", "Unaugmented")
 run_wordnet_indirect_v3(OBJECT_NAME, "custom", "Unaugmented")
 run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
@@ -180,17 +180,17 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files/car_image
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Augmented")
-run_tranfer_network(OBJECT_NAME, "custom", "Augmented")
+run_transfer_network(OBJECT_NAME, "custom", "Augmented")
 # we omit the inception/wordnet approaches, because the pure processing of the
 # images takes too much time with 11x images, but is not expected to have a major impact
 
 
 # run 3/4: imagenet images not augmented
-x_train = np_load_from_gcp(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_x.npy"))
-y_train = np_load_from_gcp(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_y.npy"))
+x_train = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_x.npy"))
+y_train = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_y.npy"))
 
 run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-run_tranfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
 run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
 
@@ -198,7 +198,7 @@ run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
 # run 4/4: imagenet images augmented
 x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
 run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
-run_tranfer_network(OBJECT_NAME, "ImageNet", "Augmented")
+run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
 # we again omit the inception/wordnet approaches for the augmented images
 
 
