@@ -73,7 +73,7 @@ own_network_config = {
 def run_custom_network(object_name, data_type, augmented):
     start = timer()
     m1 = cnn_model()
-    m1.new_model(x_train, y_train, 2, own_network_config)
+    m1.new_model(x_train, y_train, own_network_config)
     print("Training custom net for {}".format(object_name))
     m1.train(epochs=1000, batch_size=256, on_tpu="dominique-c-a-paul", tb_logs_dir="./log_files/master_logs/", verbose=True)
     y_preds = m1.predict_classes(x_test)

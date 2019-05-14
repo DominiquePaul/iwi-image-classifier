@@ -170,7 +170,7 @@ class cnn_model:
             self.train_on_cpu(epochs, batch_size, callbacks, verbose)
 
 
-    def train_on_cpu(self, epochs, batch_size, callbacks,verbose):
+    def train_on_cpu(self, epochs, batch_size, callbacks, verbose):
         print("converting y_train")
         self.y_train = tf.keras.utils.to_categorical(self.y_train, self.num_output_classes)
         print("converting y_val")
