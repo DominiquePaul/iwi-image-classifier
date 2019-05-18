@@ -33,8 +33,8 @@ from preprocessing import load_images, read_label_json, return_labelled_images, 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
-EVAL_OUT_FILE = './out_files/master_out_food1.csv'
-PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions_food1.csv'
+EVAL_OUT_FILE = './out_files/master_out_apparel_gcp1.csv'
+PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions_apparel_gcp1.csv'
 
 
 ################################################################################
@@ -141,27 +141,27 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
 ################################################################################
 ########################### Run through all tests ##############################
 ################################################################################
-OBJECT_NAME = "food"
-DATA_FOLDER_PATH = "gs://data-imr-unisg/packaged_food_data/"
-DATA_FOLDER_PATH = "../Data/np_files_final"
+OBJECT_NAME = "apparel"
+DATA_FOLDER_PATH = "gs://data-imr-unisg/packaged_apparel_data/"
+# DATA_FOLDER_PATH = "../Data/np_files_final"
 
 
-ind_labels = load_industry_labels(file_path="./industry_dicts/selection_PackagedFoodsandMeats.csv")
+ind_labels = load_industry_labels(file_path="./industry_dicts/selection_ApparelAccessoriesandLuxuryGoods.csv")
 
 
-x_test, y_test, names, _  = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "food_final_testing_dataset.npy"))
+x_test, y_test, names, _  = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "apparel_final_testing_dataset.npy"))
 
 x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
 x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
 
 ALL_PREDICTIONS_DF = pd.DataFrame({"names":names})
 # only method that doesnt require a training set
-run_wordnet_direct("food", "custom", "Unaugmented")
+run_wordnet_direct("apparel", "custom", "Unaugmented")
 
 
 # run 1/4: own images not augmented
-automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_0.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_1.npy")]
+automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_0.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_1.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
@@ -171,22 +171,14 @@ run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
 
 # run 2/4: own images augmented
-automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_0.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_1.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_2.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_3.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_4.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_5.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_6.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_7.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_8.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_9.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_10.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_11.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_12.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_13.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_14.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_15.npy")]
+automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_0.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_1.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_2.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_3.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_4.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_5.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_6.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "apparel_image_package_train_val_split_augmented_7.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
 
@@ -195,22 +187,22 @@ run_transfer_network(OBJECT_NAME, "custom", "Augmented")
 # we omit the inception/wordnet approaches, because the pure processing of the
 # images takes too much time with 11x images, but is not expected to have a major impact
 
-#
-# # run 3/4: imagenet images not augmented
-# x_train = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_x.npy"))
-# y_train = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_automobile_y.npy"))
-#
-# run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
-#
-#
-# # run 4/4: imagenet images augmented
-# x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
-# run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
-# run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
-# # we again omit the inception/wordnet approaches for the augmented images
+
+# run 3/4: imagenet images not augmented
+x_train = np.load(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_fashion_x.npy"))
+y_train = np.load(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_fashion_y.npy"))
+
+run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
+
+
+# run 4/4: imagenet images augmented
+x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
+run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
+run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
+# we again omit the inception/wordnet approaches for the augmented images
 
 
 ALL_PREDICTIONS_DF.to_csv(PREDICTIONS_MASTER_OUT_FILE, index=False)
