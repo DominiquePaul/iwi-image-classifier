@@ -142,7 +142,7 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
 ########################### Run through all tests ##############################
 ################################################################################
 OBJECT_NAME = "food"
-DATA_FOLDER_PATH = "gs://data-imr-unisg/main_data/"
+DATA_FOLDER_PATH = "gs://data-imr-unisg/packaged_food_data/"
 
 ind_labels = load_industry_labels(file_path="./industry_dicts/selection_PackagedFoodsandMeats.csv")
 
