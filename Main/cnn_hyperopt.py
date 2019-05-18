@@ -34,7 +34,7 @@ with open(out_file, 'w') as csv_file:
                     'dropout_rate_dense', 'learning_rate', 'run_time', 'val_loss',
                     'val_accuracy','val_f1', 'train_loss', 'train_accuracy', 'train_f1'])
 
-# hyperparameter optimization with hyperopt
+# the function to be optimised: it takes the parameters and returns the loss (metric to be minimised)
 def objective(params):
     m_opt=cnn_model()
     m_opt.new_model(x_train, y_train, 2, params)

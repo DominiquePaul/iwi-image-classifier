@@ -75,7 +75,7 @@ def run_custom_network(object_name, data_type, augmented):
     m1 = cnn_model()
     m1.new_model(x_train, y_train, own_network_config)
     print("Training custom net for {}".format(object_name))
-    m1.train(epochs=1000, batch_size=256, on_tpu="dominique-c-a-paul", tb_logs_dir="./log_files/master_logs/", verbose=True)
+    m1.train(epochs=1000, batch_size=256, on_tpu="dominique-c-a-paul", tb_logs_dir="./out_files/log_files/master_logs/", verbose=True)
     y_preds = m1.predict_classes(x_test)
     run_time = timer() - start
     name = "own_network_{}_{}_{}".format(data_type, augmented, object_name)
@@ -88,11 +88,11 @@ def run_transfer_network(object_name,data_type, augmented):
     name = "transfer_net_{}_{}_{}".format(data_type, augmented, object_name)
     start = timer()
     t_net = Transfer_net()
-    t_net.create_network(layers=31, neurons=44, dropout_rate=0.61, num_output_classes=2)
-    x_train_transfer = t_net.load_or_cache_transfer_data(x_train, file_path="./transnet_files/"+name)
+    t_net.create_network(layers=19, neurons=39, dropout_rate=0.486, num_output_classes=2)
+    x_train_transfer = t_net.load_transfer_data(x_train)
     print("Training transfer net for {}".format(object_name))
-    t_net.train(x_train_transfer, y_train, learning_rate=1.36e-06, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./log_files/master_logs/")
-    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./transnet_files/x_test" )
+    t_net.train(x_train_transfer, y_train, learning_rate=1.52e-05, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./out_files/log_files/master_logs/")
+    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./temp/x_test" )
     y_preds = t_net.predict_classes(x_test_transfer)
     run_time = timer() - start
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
@@ -104,8 +104,8 @@ def run_wordnet_direct(object_name, data_type, augmented):
     predictions=identify_items(x_test, [object_name], k_labels=100, use_synonyms=True)
     run_time = timer() - start
     name = "direct_wordnet_100_labels_{}_{}_{}".format(data_type, augmented, object_name)
-    df = write_outputs(x_train=[], x_test=[], predictions=predictions, run_time=run_time, name=name, object_name=object_name,
-                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
+    df = write_outputs(x_train=[], x_test=x_test, predictions=predictions, run_time=run_time, name=name, object_name=object_name,
+                         method_type="oob_network_eval", data_type=data_type, augmented=augmented)
 
 def run_wordnet_indirect_v3(object_name, data_type, augmented):
     start = timer()
@@ -202,7 +202,7 @@ run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
 
 ALL_PREDICTIONS_DF.to_csv(PREDICTIONS_MASTER_OUT_FILE, index=False)
 
-
+print("All tests finished")
 
 
 

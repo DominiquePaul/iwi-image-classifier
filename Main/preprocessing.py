@@ -908,70 +908,161 @@ if __name__ == "__main__":
 
     np.random.seed(GLOBAL_RANDOM_STATE)
 
+
+    ########################
+    ####### for cars #######
+    ########################
+    #
+    # # all folders to search for image files
+    # car_image_folders = ["../Data/car/car",
+    #                     "../Data/car/no_car"]
+    # # the folder in which to search for json files to be loaded
+    # car_json_folder = "../Data/json_files/cars"
+    #
+    # # loading the images and thei rnames from the designated folders
+    # car_names_raw, car_images = load_images(folders=car_image_folders)
+    # # reading in the image labels with a specified parsing function
+    # car_labels = read_label_json(folder=car_json_folder,
+    #                              line_interpreter_fn=analyse_line_dataturk_format)
+    # # merging the labels and images together
+    # car_names, car_files = return_labelled_images(labels=car_labels,
+    #                                               file_names=car_names_raw,
+    #                                               files=car_images)
+    #
+    # target_output_folder = "../Data/np_files_final"
+    #
+    # save_to_numpy_with_labels(folder_path=target_output_folder,
+    #                           files=car_files,
+    #                           labels=car_names["label"],
+    #                           object="car",
+    #                           balance_dataset=True,
+    #                           augment_training_data=False,
+    #                           train_val_test_split=True,
+    #                           file_names=car_names["file_name"])
+    #
+    # save_to_numpy_with_labels(folder_path=target_output_folder,
+    #                           files=car_files,
+    #                           labels=car_names["label"],
+    #                           object="car",
+    #                           balance_dataset=True,
+    #                           augment_training_data=True,
+    #                           train_val_test_split=True,
+    #                           file_names=car_names["file_name"])
+    #
+    #
+    # save_to_numpy(folder_path=target_np_folder,
+    #               img_names=car_names_raw["file_name"],
+    #               files=car_images,
+    #               object="testing_data")
+
+
+    ########################
+    ####### for food #######
+    ########################
+    #
+    # # all folders to search for image files
+    # food_image_folders = ["../Data/food/food",
+    #                     "../Data/food/no_food"]
+    # # the folder in which to search for json files to be loaded
+    # food_json_folder = "../Data/json_files/food"
+    #
+    # # loading the images and thei rnames from the designated folders
+    # food_names_raw, food_images = load_images(folders=food_image_folders)
+    # # reading in the image labels with a specified parsing function
+    # food_labels = read_label_json(folder=food_json_folder,
+    #                              line_interpreter_fn=analyse_line_dataturk_format)
+    # # merging the labels and images together
+    # food_names, food_files = return_labelled_images(labels=food_labels,
+    #                                               file_names=food_names_raw,
+    #                                               files=food_images)
+    #
+    # target_output_folder = "../Data/np_files_final"
+    #
+    #
+    # save_to_numpy_with_labels(folder_path=target_output_folder,
+    #                           files=food_files,
+    #                           labels=food_names["label"],
+    #                           object="food",
+    #                           balance_dataset=True,
+    #                           augment_training_data=False,
+    #                           train_val_test_split=True,
+    #                           file_names=food_names["file_name"])
+    #
+    # save_to_numpy_with_labels(folder_path=target_output_folder,
+    #                           files=food_files,
+    #                           labels=food_names["label"],
+    #                           object="food",
+    #                           balance_dataset=True,
+    #                           augment_training_data=True,
+    #                           train_val_test_split=True,
+    #                           file_names=food_names["file_name"])
+    #
+    #
+    # save_to_numpy(folder_path=target_output_folder,
+    #               img_names=food_names_raw["file_name"],
+    #               files=food_images,
+    #               object="testing_data")
+
+
+
+    ###########################
+    ####### for apparel #######
+    ###########################
+
     # all folders to search for image files
-    car_image_folders = ["../Data/car/car",
-                        "../Data/car/no_car"]
+    apparel_image_folders = ["../Data/apparel/apparel",
+                        "../Data/apparel/no_apparel"]
     # the folder in which to search for json files to be loaded
-    car_json_folder = "../Data/json_files/cars"
+    apparel_json_folder = "../Data/json_files/apparel"
 
     # loading the images and thei rnames from the designated folders
-    car_names_raw, car_images = load_images(folders=car_image_folders)
+    apparel_names_raw, apparel_images = load_images(folders=apparel_image_folders)
     # reading in the image labels with a specified parsing function
-    car_labels = read_label_json(folder=car_json_folder,
+    apparel_labels = read_label_json(folder=apparel_json_folder,
                                  line_interpreter_fn=analyse_line_dataturk_format)
     # merging the labels and images together
-    car_names, car_files = return_labelled_images(labels=car_labels,
-                                                  file_names=car_names_raw,
-                                                  files=car_images)
+    apparel_names, apparel_files = return_labelled_images(labels=apparel_labels,
+                                                  file_names=apparel_names_raw,
+                                                  files=apparel_images)
 
-    target_output_folder = "../Data/np_files_test"
+    target_output_folder = "../Data/np_files_final"
+
 
     save_to_numpy_with_labels(folder_path=target_output_folder,
-                              files=car_files,
-                              labels=car_names["label"],
-                              object="car",
+                              files=apparel_files,
+                              labels=apparel_names["label"],
+                              object="apparel",
                               balance_dataset=True,
                               augment_training_data=False,
                               train_val_test_split=True,
-                              file_names=car_names["file_name"])
+                              file_names=apparel_names["file_name"])
 
     save_to_numpy_with_labels(folder_path=target_output_folder,
-                              files=car_files,
-                              labels=car_names["label"],
-                              object="car",
+                              files=apparel_files,
+                              labels=apparel_names["label"],
+                              object="apparel",
                               balance_dataset=True,
                               augment_training_data=True,
                               train_val_test_split=True,
-                              file_names=car_names["file_name"])
+                              file_names=apparel_names["file_name"])
 
 
-    save_to_numpy(folder_path=target_np_folder,
-                  img_names=car_names_raw["file_name"],
-                  files=car_images,
+    save_to_numpy(folder_path=target_output_folder,
+                  img_names=apparel_names_raw["file_name"],
+                  files=apparel_images,
                   object="testing_data")
 
 
 
+
+
+
+
+
+
+
+
 """
-# for apparel
-apparel_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/apparel",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/no_apparel"]
-apparel_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/apparel"
-apparel_names_raw, apparel_files = load_images(apparel_image_folders)
-apparel_labels = read_label_json(apparel_json_folder)
-apparel_names, apparel_files = return_labelled_images(apparel_labels, apparel_names_raw, apparel_files)
-save_to_numpy_with_labels(target_np_folder, apparel_files, apparel_names["label"], "apparel", augment_training_data=True, train_val_test_split=True)
-
-# for food
-food_image_folders = ["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/food",
-                    "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/food/no_food"]
-food_json_folder = "/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/json_files/food"
-food_names_raw, food_files = load_images(food_image_folders)
-food_labels = read_label_json(food_json_folder)
-food_names, food_files2 = return_labelled_images(food_labels, food_names_raw, food_files)
-save_to_numpy_with_labels(target_np_folder, food_files2, food_names["label"], "food", augment_training_data=True, train_val_test_split=True)
-
-
 
 from PIL import Image
 img = load_single_image("/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/apparel/apparel/RalphLauren_6797246895_10153439142626896_.jpg")

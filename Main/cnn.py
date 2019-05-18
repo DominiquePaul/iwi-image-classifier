@@ -255,7 +255,7 @@ if __name__ == "__main__":
     # construct a new model and the configuration file and data to be usef for training
     m1.new_model(x_data=x_train, y_data=y_train, config=config_v1)
     # start training and state where to save the logs
-    m1.train(epochs=2, batch_size=256, on_tpu=None, tb_logs_dir="./log_files", verbose=True)
+    m1.train(epochs=2, batch_size=256, on_tpu=None, tb_logs_dir="./out_files/log_files", verbose=True)
     # save the trained model with its parameters
     m1.save_model(file="./model_v1.HDF5")
 

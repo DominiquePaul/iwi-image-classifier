@@ -72,7 +72,7 @@ def run_custom_network(object_name, data_type, augmented):
     m1 = cnn_model()
     m1.new_model(x_train, y_train, own_network_config)
     print("Training custom net for {}".format(object_name))
-    m1.train(epochs=1000, batch_size=256, on_tpu=None, tb_logs_dir="./log_files/master_logs/", verbose=True)
+    m1.train(epochs=1000, batch_size=256, on_tpu=None, tb_logs_dir="./out_files/log_files/master_logs/", verbose=True)
     y_preds = m1.predict_classes(x_test)
     run_time = timer() - start
     name = "own_network_{}_{}_{}".format(data_type, augmented, object_name)
@@ -85,11 +85,11 @@ def run_transfer_network(object_name,data_type, augmented):
     name = "transfer_net_{}_{}_{}".format(data_type, augmented, object_name)
     start = timer()
     t_net = Transfer_net()
-    t_net.create_network(layers=31, neurons=44, dropout_rate=0.61, num_output_classes=2)
-    x_train_transfer = t_net.load_or_cache_transfer_data(x_train, file_path="./transnet_files/"+name)
+    t_net.create_network(layers=19, neurons=39, dropout_rate=0.486, num_output_classes=2)
+    x_train_transfer = t_net.load_transfer_data(x_train)
     print("Training transfer net for {}".format(object_name))
-    t_net.train(x_train_transfer, y_train, learning_rate=1.36e-06, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./log_files/master_logs/")
-    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./transnet_files/x_test" )
+    t_net.train(x_train_transfer, y_train, learning_rate=1.52e-05, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./out_files/log_files/master_logs/")
+    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./temp/x_test" )
     y_preds = t_net.predict_classes(x_test_transfer)
     run_time = timer() - start
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
@@ -102,7 +102,7 @@ def run_wordnet_direct(object_name, data_type, augmented):
     run_time = timer() - start
     name = "direct_wordnet_100_labels_{}_{}_{}".format(data_type, augmented, object_name)
     df = write_outputs(x_train=[], x_test=x_test, predictions=predictions, run_time=run_time, name=name, object_name=object_name,
-                         method_type="Transfer Network", data_type=data_type, augmented=augmented)
+                         method_type="oob_network_eval", data_type=data_type, augmented=augmented)
 
 def run_wordnet_indirect_v3(object_name, data_type, augmented):
     start = timer()
@@ -143,72 +143,76 @@ EVAL_OUT_FILE = './out_files/master_out.csv'
 PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions.csv'
 
 
-OBJECT_NAME = "car"
+OBJECT_NAME = "food"
 DATA_FOLDER_PATH = "../Data"
-ind_labels = load_industry_labels(file_path="./industry_dicts/selection_AutomobileManufacturers.csv")
+ind_labels = load_industry_labels(file_path="./industry_dicts/selection_PackagedFoodsandMeats.csv")
 
-x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files4/car_final_testing_dataset.npy"))
-x_test = x_test[:10]
-y_test = y_test[:10]
-names = names[:10]
+x_test, y_test, names, _  = np.load(os.path.join(DATA_FOLDER_PATH, "np_files_final/food_final_testing_dataset.npy"))
 
 x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
 x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
 
 ALL_PREDICTIONS_DF = pd.DataFrame({"names":names})
 # only method that doesnt require a training set
-run_wordnet_direct("car", "custom", "Unaugmented")
+run_wordnet_direct("food", "custom", "Unaugmented")
 
 
 # run 1/4: own images not augmented
-automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_0.npy")]
+automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_0.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
-x_train = x_train[:40]
-y_train = y_train[:40]
 
 # run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
-# run_transfer_network(OBJECT_NAME, "custom", "Unaugmented")
+run_transfer_network(OBJECT_NAME, "custom", "Unaugmented")
 
 run_wordnet_indirect_v3(OBJECT_NAME, "custom", "Unaugmented")
 run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
 
 # run 2/4: own images augmented
-automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_0.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_1.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_2.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_3.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_4.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_5.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files4/car_image_package_train_val_split_augmented_6.npy")]
+automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_0.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_1.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_2.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_3.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_4.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_5.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_6.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_7.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_8.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_9.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_10.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_11.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_12.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_13.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_14.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_15.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
-run_custom_network(OBJECT_NAME, "custom", "Augmented")
+#run_custom_network(OBJECT_NAME, "custom", "Augmented")
 run_transfer_network(OBJECT_NAME, "custom", "Augmented")
 # we omit the inception/wordnet approaches, because the pure processing of the
 # images takes too much time with 11x images, but is not expected to have a major impact
 
 
 # run 3/4: imagenet images not augmented
-x_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_x.npy"))
-y_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_y.npy"))
+# x_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_x.npy"))
+# y_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_y.npy"))
 
-run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
-run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
+#run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+# run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+# run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
+# run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
 
 
 # run 4/4: imagenet images augmented
-x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
-run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
-run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
+# x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
+#run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
+# run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
 # we again omit the inception/wordnet approaches for the augmented images
 
 
 ALL_PREDICTIONS_DF.to_csv(PREDICTIONS_MASTER_OUT_FILE, index=False)
 
-
+print("All tests finished")
 
 
 

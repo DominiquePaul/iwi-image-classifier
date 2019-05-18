@@ -75,18 +75,18 @@ class Transfer_net:
         """
         Transforms image values into transfer values of the last layer of the inception network
         """
-        transfer_values = transfer_values(images=images, model=self.backend_model)
-        return transfer_values
+        transfer_vals = transfer_values(images=images, model=self.backend_model)
+        return transfer_vals
 
     def load_or_cache_transfer_data(self, images, file_path):
         """Function that returns raw images into transfer values and saves them
         """
         if file_path[-4:] != ".npy":
             file_path = file_path + ".npy"
-        transfer_values = transfer_values_cache(cache_path=file_path,
+        transfer_vals = transfer_values_cache(cache_path=file_path,
                                                 images=images,
                                                 model=self.backend_model)
-        return transfer_values
+        return transfer_vals
 
     def train(self, x_train, y_train, learning_rate, epochs, batch_size, tb_logs_dir=None, verbose=False):
         early_stopping_callback = EarlyStopping(monitor="val_loss", patience=25)
