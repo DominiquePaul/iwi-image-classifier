@@ -147,7 +147,7 @@ DATA_FOLDER_PATH = "gs://data-imr-unisg/packaged_food_data/"
 ind_labels = load_industry_labels(file_path="./industry_dicts/selection_PackagedFoodsandMeats.csv")
 
 
-x_test, y_test, names, _  = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "np_files/food_final_testing_dataset.npy"))
+x_test, y_test, names, _  = load_from_gcp(os.path.join(DATA_FOLDER_PATH, "food_final_testing_dataset.npy"))
 
 x_test_df_20 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=20)
 x_test_df_50 = create_feature_df(imgs=x_test, object_name=OBJECT_NAME, ind_labels=ind_labels, k_labels=50)
@@ -158,8 +158,8 @@ run_wordnet_direct("food", "custom", "Unaugmented")
 
 
 # run 1/4: own images not augmented
-automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_0.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_1.npy")]
+automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_0.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_1.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
@@ -169,22 +169,22 @@ run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
 
 # run 2/4: own images augmented
-automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_0.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_1.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_2.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_3.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_4.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_5.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_6.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_7.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_8.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_9.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_10.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_11.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_12.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_13.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_14.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "np_files/food_image_package_train_val_split_augmented_15.npy")]
+automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_0.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_1.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_2.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_3.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_4.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_5.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_6.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_7.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_8.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_9.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_10.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_11.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_12.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_13.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_14.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_15.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
 run_custom_network(OBJECT_NAME, "custom", "Augmented")
