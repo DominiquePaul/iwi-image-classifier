@@ -142,7 +142,7 @@ def run_wordnet_indirect_v4(object_name, data_type, augmented):
 ########################### Run through all tests ##############################
 ################################################################################
 OBJECT_NAME = "apparel"
-DATA_FOLDER_PATH = "gs://data-imr-unisg/packaged_apparel_data/"
+DATA_FOLDER_PATH = "gs://data-imr-unisg/apparel_data/"
 # DATA_FOLDER_PATH = "../Data/np_files_final"
 
 
