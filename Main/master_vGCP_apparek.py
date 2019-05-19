@@ -92,7 +92,7 @@ def run_transfer_network(object_name,data_type, augmented):
     x_train_transfer = t_net.load_transfer_data(x_train)
     print("Training transfer net for {}".format(object_name))
     t_net.train(x_train_transfer, y_train, learning_rate=1.52e-05, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./out_files/log_files/master_logs/")
-    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./temp/x_test" )
+    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./temp/x_test_"+OBJECT_NAME )
     y_preds = t_net.predict_classes(x_test_transfer)
     run_time = timer() - start
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
@@ -188,9 +188,11 @@ run_transfer_network(OBJECT_NAME, "custom", "Augmented")
 # images takes too much time with 11x images, but is not expected to have a major impact
 
 
+DATA_FOLDER_PATH = "../Data/"
+
 # run 3/4: imagenet images not augmented
-x_train = np.load(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_fashion_x.npy"))
-y_train = np.load(os.path.join(DATA_FOLDER_PATH, "image_net_files/image_net_images_imgnet_fashion_y.npy"))
+x_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_fashion_x.npy"))
+y_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_fashion_y.npy"))
 
 # run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")

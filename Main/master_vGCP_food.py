@@ -33,8 +33,8 @@ from preprocessing import load_images, read_label_json, return_labelled_images, 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
-EVAL_OUT_FILE = './out_files/master_out_food1.csv'
-PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions_food1.csv'
+EVAL_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_out_food1.csv'
+PREDICTIONS_MASTER_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_predictions_food1.csv'
 
 
 ################################################################################
@@ -175,7 +175,7 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "food_image_package
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_1.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_2.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_3.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_4.npy"),
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_4.npy")],
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_5.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_6.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_7.npy"),
@@ -189,6 +189,7 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "food_image_package
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_15.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
+len(x_train)
 
 run_custom_network(OBJECT_NAME, "custom", "Augmented")
 run_transfer_network(OBJECT_NAME, "custom", "Augmented")

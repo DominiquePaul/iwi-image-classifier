@@ -247,7 +247,7 @@ if __name__ == "__main__":
         "dense_layers": 5,
         "dense_neurons": 20,
         "dropout_rate_dense": 0.2,
-        "learning_rate": 1e-04,
+        "learning_rate": 1e-04
     }
 
     # instantiate the class
@@ -267,62 +267,6 @@ if __name__ == "__main__":
     print(m2.predict_classes(x_test))
 
     print(m2.predict(x_test))
-
-
-
-"""
-config_v1 = {
-    "conv_layers": 4,
-    "conv_filters": 128,
-    "dense_layers": 5,
-    "dense_neurons": 20,
-    "dropout_rate_dense": 0.2,
-    "learning_rate": 1e-04,
-}
-
-
-data_url=['../data/np_files4/car_image_package_train_val_split_0.npy']
-x_train_alt, y_train_alt, x_test_alt, y_test_alt, conversion = join_npy_data(data_url, training_data_only=False)
-
-
-y_train_alt
-
-import tensorflow as tf
-mnist = tf.keras.datasets.mnist
-
-(x_train, y_train),(x_test, y_test) = mnist.load_data()
-# x_train, x_test = x_train / 255.0, x_test / 255.0
-
-x_train, y_train,x_test, y_test = x_train[:20], y_train[:20],x_test[:20], y_test[:20]
-
-x_train.shape
-
-import cv2
-x_train_new = []
-for x in x_train:
-    x_train_new.extend([cv2.cvtColor(x, cv2.COLOR_GRAY2RGB)])
-x_train_new = np.array(x_train_new)
-
-x_test_new = []
-for x in x_test:
-    x_test_new.extend([cv2.cvtColor(x, cv2.COLOR_GRAY2RGB)])
-x_test_new = np.array(x_test_new)
-
-x_test_new.shape
-
-y_train_alt[0]=2
-
-# model
-m1 = cnn_model()
-m1.new_model(x_train_new, y_train_alt[:20], 3, config_v1)
-m1.train(epochs=2, batch_size=256, on_tpu=None, tb_logs_dir=None, verbose=True)
-m1.save_model(file="my_model_mnist.HDF5")
-
-m2 = cnn_model()
-m2.load_model("my_model_mnist.HDF5")
-print(m2.predict_classes(x_test_new))
-"""
-
 
 
 

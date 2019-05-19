@@ -30,7 +30,7 @@ from transfer_learning import Transfer_net
 from label_interpretation import create_feature_df, load_industry_labels, identify_items
 from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, augment_data, load_from_gcp
 
-sys.path.append(dirname("./modules/"))
+sys.path.append(dirname("/Users/dominiquepaul/classification_tool/Main/modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
 EVAL_OUT_FILE = './out_files/master_out_car1.csv'
@@ -92,7 +92,7 @@ def run_transfer_network(object_name,data_type, augmented):
     x_train_transfer = t_net.load_transfer_data(x_train)
     print("Training transfer net for {}".format(object_name))
     t_net.train(x_train_transfer, y_train, learning_rate=1.52e-05, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./out_files/log_files/master_logs/")
-    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./temp/x_test" )
+    x_test_transfer = t_net.load_transfer_data(x_test, file_path= "./temp/x_test_"+OBJECT_NAME )
     y_preds = t_net.predict_classes(x_test_transfer)
     run_time = timer() - start
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,

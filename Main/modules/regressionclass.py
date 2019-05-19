@@ -28,7 +28,7 @@ class Logistic_regression:
     def fit(self, x_train, y_train):
         x_train = self.maybe_convert_to_array(x_train)
         model = sm.Logit(y_train,x_train)
-        self.model = model.fit()
+        self.model = model.fit(method='bfgs')
 
     def all_decision_thresholds(self, x_feats, y_true):
         preds = self.predict(x_feats)

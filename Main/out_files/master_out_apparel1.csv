@@ -2,3 +2,8 @@ direct_wordnet_100_labels_custom_Unaugmented_apparel,apparel,oob_network_eval,cu
 transfer_net_custom_Unaugmented_apparel,apparel,Transfer Network,custom,Unaugmented,5166,460,1217.9032030390008,0.9260869565217391,0.8229166666666666,347,17,17,79
 indirect_wordnet_v3_50_labels_custom_Unaugmented_apparel,apparel,oob_network_eval,custom,Unaugmented,5166,460,1410.114925801001,0.658695652173913,0.5109034267912773,221,143,14,82
 indirect_wordnet_lasso_20_labels_custom_Unaugmented_apparel,apparel,oob_network_eval,custom,Unaugmented,5166,460,1346.160501921997,0.558695652173913,0.4438356164383562,176,188,15,81
+transfer_net_custom_Augmented_apparel,apparel,Transfer Network,custom,Augmented,23864,460,5216.285515693999,0.8391304347826087,0.6063829787234043,329,35,39,57
+transfer_net_ImageNet_Unaugmented_apparel,apparel,Transfer Network,ImageNet,Unaugmented,4000,460,875.9866584219999,0.3,0.15706806282722513,108,256,66,30
+indirect_wordnet_v3_50_labels_ImageNet_Unaugmented_apparel,apparel,oob_network_eval,ImageNet,Unaugmented,4000,460,1104.6138547980008,0.30217391304347824,0.18734177215189876,102,262,59,37
+indirect_wordnet_lasso_20_labels_ImageNet_Unaugmented_apparel,apparel,oob_network_eval,ImageNet,Unaugmented,4000,460,942.573831421003,0.26521739130434785,0.19138755980861247,82,282,56,40
+transfer_net_ImageNet_Augmented_apparel,apparel,Transfer Network,ImageNet,Augmented,44000,460,9766.228399102001,0.31521739130434784,0.16886543535620052,113,251,64,32

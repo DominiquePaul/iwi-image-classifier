@@ -11,7 +11,15 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python import keras
 from tensorflow.python.keras import backend as K
 
-sys.path.append(dirname("./modules/"))
+# option 1 for loading other modules
+sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
+
+### an alternative menthod for handling file paths ###
+# main_path = os.path.dirname(__file__) # this doesnt work when run in a REPL environment
+# module_path = os.path.join(main_path,"modules/" )
+# sys.path.append(dirname(module_path))
+
+
 from preprocessing import join_npy_data
 import inception
 from inception import transfer_values_cache, transfer_values

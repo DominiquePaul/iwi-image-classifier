@@ -16,9 +16,6 @@ Other similarities to try:
 - Lin Similarity (Lin 1998b)
 - Jiang-Conrath distance (Jiang and Conrath 1997)
 
-to do:
-    -cross valiate cutoffs and other methods for approach 1
-    -iterate over all datasets
 """
 
 import nltk
@@ -33,7 +30,7 @@ from tqdm import tqdm
 
 from os.path import dirname
 import sys
-sys.path.append(dirname("/Users/dominiquepaul/xBachelorArbeit/Spring19/Bachelor-arbeit/Main/modules/"))
+sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
 
 import inception as inception
 from regressionclass import Logistic_regression, Lasso_regression
@@ -262,12 +259,12 @@ if __name__ == "__main__":
                                    basic_feats=True,
                                    ordnet_feats=True)
     # train regression
-    lasso = Logistic_regression()
+    lasso = Lasso_regression()
     lasso.fit(x_train_df, y_train)
     lasso.find_best_thresh(x_train_df, y_train, optimize_for="f1", verbose=True)
     lasso.save("./saved_lasso_model.pkl")
 
-    lasso2 = Logistic_regression()
+    lasso2 = Lasso_regression()
     lasso2.load("./saved_lasso_model.pkl")
 
     x_test_df = create_feature_df(imgs=x_test,

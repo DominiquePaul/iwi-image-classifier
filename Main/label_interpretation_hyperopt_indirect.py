@@ -68,7 +68,7 @@ for label_amount in tqdm(n_label_list):
     # train regression
     lr2 = Logistic_regression()
     lr2.fit(x_train_arr2, y_train)
-    lr2.find_best_thresh(x_train_arr2, y_train, optimize_for="f1", verbose=True)
+    lr2.find_best_thresh(x_train_arr2, y_train, optimize_for="accuracy", verbose=True)
     # evalaute
     train_acc, train_f1,_ = lr2.evaluate(x_train_arr2, y_train)
     test_acc, test_f1, conf_m = lr2.evaluate(x_test_arr2, y_test)
@@ -83,7 +83,7 @@ for label_amount in tqdm(n_label_list):
     # train regression
     lr3 = Logistic_regression()
     lr3.fit(x_train_arr3, y_train)
-    lr3.find_best_thresh(x_train_arr3, y_train, optimize_for="f1", verbose=True)
+    lr3.find_best_thresh(x_train_arr3, y_train, optimize_for="accuracy", verbose=True)
     # evalaute
     train_acc, train_f1,_ = lr3.evaluate(x_train_arr3, y_train)
     test_acc, test_f1, conf_m = lr3.evaluate(x_test_arr3, y_test)

@@ -89,7 +89,7 @@ def run_transfer_network(object_name,data_type, augmented):
     x_train_transfer = t_net.load_transfer_data(x_train)
     print("Training transfer net for {}".format(object_name))
     t_net.train(x_train_transfer, y_train, learning_rate=1.52e-05, epochs=10000, batch_size=256, verbose=True, tb_logs_dir="./out_files/log_files/master_logs/")
-    x_test_transfer = t_net.load_or_cache_transfer_data(x_test, file_path= "./temp/x_test" )
+    x_test_transfer = t_net.load_transfer_data(x_test, file_path= "./temp/x_test" )
     y_preds = t_net.predict_classes(x_test_transfer)
     run_time = timer() - start
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,

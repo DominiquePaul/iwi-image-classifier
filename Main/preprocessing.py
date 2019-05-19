@@ -371,7 +371,9 @@ def balance_data(x_data, y_data):
     rebalances an unequal dataset (in terms of available data)
 
     replaces the underrepresented sample to force equal amount of samples. So
-    far it only works when two labels are given
+    far it only works when two labels are given. So far the balance_data option
+    is the only option that does not work with more than two classes (non-binary
+    classification)
 
     Args:
         x_data: np.array with image values
