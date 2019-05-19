@@ -42,5 +42,12 @@ print("Model saved")
 
 
 # we create as dataframe of features extracted from the inception network for the validation data
-# x_val_df = create_feature_df(imgs=x_val, object_name=OBJECT, ind_labels=industry_labels, k_labels=10, basic_feats=True, wordnet_feats=True)
-# preds = log_reg.predict_classes(x_test_df)
+x_val_df = create_feature_df(imgs=x_val, object_name=OBJECT_NAME, ind_labels=industry_labels, k_labels=10, basic_feats=True, wordnet_feats=True)
+
+# making probability predictions on validation data
+probality_predictions = log_reg.predict(x_val_df)
+print(probality_predictions)
+
+# making class predictions on validation data
+class_predictions = log_reg.predict_classes(x_val_df)
+print(class_predictions)

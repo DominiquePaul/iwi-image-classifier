@@ -15,6 +15,7 @@ sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/m
 
 from regressionclass import Logistic_regression, Lasso_regression
 from label_interpretation import load_industry_labels, create_feature_df
+import pandas as pd
 import numpy as np
 
 

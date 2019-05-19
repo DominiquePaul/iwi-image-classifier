@@ -33,8 +33,8 @@ from preprocessing import load_images, read_label_json, return_labelled_images, 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
-EVAL_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_out_food1.csv'
-PREDICTIONS_MASTER_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_predictions_food1.csv'
+EVAL_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_out_food2.csv'
+PREDICTIONS_MASTER_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_predictions_food2.csv'
 
 
 ################################################################################
@@ -45,7 +45,7 @@ PREDICTIONS_MASTER_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out
 def write_results_to_csv(x_train, x_test, predictions, run_time, name, object_name, method_type, data_type, augmented):
     accuracy_test = sklearn.metrics.accuracy_score(y_test, predictions)
     f1_score_test = sklearn.metrics.f1_score(y_test, predictions)
-    [TP, FP], [FN, TN] = sklearn.metrics.confusion_matrix(y_test, predictions)
+    TN, FP, FN, TP = sklearn.metrics.confusion_matrix(y_test, predictions).ravel()
 
     # writes out all summarising results to a csv
     with open(EVAL_OUT_FILE, 'a') as csv_file:
@@ -115,7 +115,7 @@ def run_wordnet_indirect_v3(object_name, data_type, augmented):
     # train regression
     lr = Logistic_regression()
     lr.fit(x_train_arr, y_train)
-    lr.find_best_thresh(x_train_arr, y_train, optimize_for="f1", verbose=True)
+    lr.find_best_thresh(x_train_arr, y_train, optimize_for="accuracy", verbose=True)
     y_preds = lr.predict_classes(x_test_arr)
     run_time = timer() - start
     name = "indirect_wordnet_v3_50_labels_{}_{}_{}".format(data_type, augmented, object_name)
@@ -164,10 +164,10 @@ automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_1.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
-run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
-run_transfer_network(OBJECT_NAME, "custom", "Unaugmented")
-run_wordnet_indirect_v3(OBJECT_NAME, "custom", "Unaugmented")
-run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
+# run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
+# run_transfer_network(OBJECT_NAME, "custom", "Unaugmented")
+# run_wordnet_indirect_v3(OBJECT_NAME, "custom", "Unaugmented")
+# run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
 
 # run 2/4: own images augmented
@@ -189,11 +189,10 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "food_image_package
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_15.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
-len(x_train)
-
-run_custom_network(OBJECT_NAME, "custom", "Augmented")
-run_transfer_network(OBJECT_NAME, "custom", "Augmented")
-# we omit the inception/wordnet approaches, because the pure processing of the
+#
+# run_custom_network(OBJECT_NAME, "custom", "Augmented")
+# run_transfer_network(OBJECT_NAME, "custom", "Augmented")
+# # we omit the inception/wordnet approaches, because the pure processing of the
 # images takes too much time with 11x images, but is not expected to have a major impact
 
 #
@@ -204,7 +203,7 @@ run_transfer_network(OBJECT_NAME, "custom", "Augmented")
 # run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 # run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 # run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
 #
 #
 # # run 4/4: imagenet images augmented

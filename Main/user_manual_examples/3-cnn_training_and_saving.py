@@ -14,6 +14,7 @@ sys.path.append(dirname("../."))
 
 from preprocessing import join_npy_data
 from cnn import cnn_model
+import numpy as np
 
 # load the data that was previously
 file_paths=['./example_output_folder/apparel_image_package_train_val_split_0.npy']

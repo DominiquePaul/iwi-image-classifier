@@ -112,7 +112,7 @@ def run_wordnet_indirect_v3(object_name, data_type, augmented):
     # train regression
     lr = Logistic_regression()
     lr.fit(x_train_arr, y_train)
-    lr.find_best_thresh(x_train_arr, y_train, optimize_for="f1", verbose=True)
+    lr.find_best_thresh(x_train_arr, y_train, optimize_for="accuracy", verbose=True)
     y_preds = lr.predict_classes(x_test_arr)
     run_time = timer() - start
     name = "indirect_wordnet_v3_50_labels_{}_{}_{}".format(data_type, augmented, object_name)
