@@ -26,15 +26,15 @@ from os.path import dirname
 from timeit import default_timer as timer
 
 from cnn import cnn_model
-from transfer_learning import Transfer_net
+# from transfer_learning import Transfer_net
 from label_interpretation import create_feature_df, load_industry_labels, identify_items
 from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, augment_data, load_from_gcp
 
 sys.path.append(dirname("./modules/"))
 from regressionclass import Logistic_regression, Lasso_regression
 
-EVAL_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_out_food_gcp10.csv'
-PREDICTIONS_MASTER_OUT_FILE = '/Users/dominiquepaul/classification_tool/Main/out_files/master_predictions_food_gcp10.csv'
+EVAL_OUT_FILE = './out_files/master_out_food_gcp10.csv'
+PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions_food_gcp10.csv'
 
 
 ################################################################################
@@ -174,7 +174,7 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "food_image_package
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_1.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_2.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_3.npy"),
-                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_4.npy")],
+                    os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_4.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_5.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_6.npy"),
                     os.path.join(DATA_FOLDER_PATH, "food_image_package_train_val_split_augmented_7.npy"),
@@ -202,7 +202,7 @@ x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, t
 # run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 # run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
 # run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
+# run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmefnted")
 #
 #
 # # run 4/4: imagenet images augmented
