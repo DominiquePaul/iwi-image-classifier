@@ -1,3 +1,6 @@
+"""
+The script used to perform automated hyperparameter optimisation of the transfer learning approach
+"""
 import numpy as np
 import csv
 import hyperopt

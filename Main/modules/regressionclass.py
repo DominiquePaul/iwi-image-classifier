@@ -82,7 +82,7 @@ class Logistic_regression:
         predictions = self.predict_classes(x_test)
         accuracy = metrics.accuracy_score(y_test, predictions)
         f1_metric = metrics.f1_score(y_test, predictions)
-        [TP, FP], [FN, TN] = metrics.confusion_matrix(y_test, predictions)
+        TN, FP, FN, TP = metrics.confusion_matrix(y_test, predictions).ravel()
         return(np.round(accuracy,rounded_to), np.round(f1_metric,rounded_to), (TP, FP, FN, TN))
 
     def save_model(self, file_path):

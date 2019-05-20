@@ -1,3 +1,7 @@
+"""
+The script used to perform automated hyperparameter optimisation of the indirect label evaluation approach
+"""
+
 import csv
 import sys
 import numpy as np
@@ -9,7 +13,15 @@ import pandas as pd
 from preprocessing import join_npy_data
 from label_interpretation import load_industry_labels, create_feature_df
 
-sys.path.append(dirname("/Users/dominiquepaul/xBachelorArbeit/Spring19/Bachelor-arbeit/Main/modules/"))
+# option 1 for loading other modules
+# this doesnt work when run in a REPL environment
+main_path = os.path.dirname(__file__)
+module_path = os.path.join(main_path,"modules/" )
+sys.path.append(dirname(module_path))
+
+### an alternative menthod for handling file paths is by using the absolute path ###
+# sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
+
 from regressionclass import Logistic_regression, Lasso_regression
 
 

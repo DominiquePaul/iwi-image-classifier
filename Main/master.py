@@ -1,19 +1,17 @@
 """
+The script for evaluaton of all approaches in one go locally. Results are saved as CSVs
+
 Data inputs:
-* prop normal
-* prop augmented
+* own data normal
+* own data augmented
 * imagenet normal
 * imagenet augmented
 
 Models:
-* own network (already optimised)
-* transfer learning (already optimised)
-* wordnet approaches (5x)
+* own network (parameters from hyperoptimisation)
+* transfer learning (parameters from hyperoptimisation)
+* label interpretation approaches
 
-
-TODO:
-    * adjust epochs for networks (10000 & 1000)
-    * add timer for each method
 """
 import os
 import sys
@@ -30,7 +28,15 @@ from transfer_learning import Transfer_net
 from label_interpretation import create_feature_df, load_industry_labels, identify_items
 from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, augment_data
 
-sys.path.append(dirname("./modules/"))
+# option 1 for loading other modules
+# this doesnt work when run in a REPL environment
+main_path = os.path.dirname(__file__)
+module_path = os.path.join(main_path,"modules/" )
+sys.path.append(dirname(module_path))
+
+### an alternative menthod for handling file paths is by using the absolute path ###
+# sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
+
 from regressionclass import Logistic_regression, Lasso_regression
 
 ################################################################################
@@ -80,7 +86,7 @@ def run_custom_network(object_name, data_type, augmented):
     write_outputs(x_train=x_train, x_test=x_test, predictions=y_preds, run_time=run_time, name=name, object_name=object_name,
                          method_type="own Network", data_type=data_type, augmented=augmented)
 
-# have to change some parameters here
+
 def run_transfer_network(object_name,data_type, augmented):
     name = "transfer_net_{}_{}_{}".format(data_type, augmented, object_name)
     start = timer()
@@ -161,9 +167,8 @@ run_wordnet_direct("food", "custom", "Unaugmented")
 automotive_pckgs = [os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_0.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs, training_data_only=False)
 
-# run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
+run_custom_network(OBJECT_NAME, "custom", "Unaugmented")
 run_transfer_network(OBJECT_NAME, "custom", "Unaugmented")
-
 run_wordnet_indirect_v3(OBJECT_NAME, "custom", "Unaugmented")
 run_wordnet_indirect_v4(OBJECT_NAME, "custom", "Unaugmented")
 
@@ -187,26 +192,26 @@ automotive_pckgs_augmented = [os.path.join(DATA_FOLDER_PATH, "np_files_final/foo
                     os.path.join(DATA_FOLDER_PATH, "np_files_final/food_image_package_train_val_split_augmented_15.npy")]
 x_train, y_train, _, _, conversion = join_npy_data(automotive_pckgs_augmented, training_data_only=False)
 
-#run_custom_network(OBJECT_NAME, "custom", "Augmented")
+run_custom_network(OBJECT_NAME, "custom", "Augmented")
 run_transfer_network(OBJECT_NAME, "custom", "Augmented")
 # we omit the inception/wordnet approaches, because the pure processing of the
 # images takes too much time with 11x images, but is not expected to have a major impact
 
 
 # run 3/4: imagenet images not augmented
-# x_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_x.npy"))
-# y_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_y.npy"))
+x_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_x.npy"))
+y_train = np.load(os.path.join(DATA_FOLDER_PATH, "ImageNet/image_net_images_imgnet_automobile_y.npy"))
 
-#run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
-# run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_custom_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_transfer_network(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_wordnet_indirect_v3(OBJECT_NAME, "ImageNet", "Unaugmented")
+run_wordnet_indirect_v4(OBJECT_NAME, "ImageNet", "Unaugmented")
 
 
 # run 4/4: imagenet images augmented
-# x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
-#run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
-# run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
+x_train, y_train =  augment_data(x_train, y_train, shuffle=True)
+run_custom_network(OBJECT_NAME, "ImageNet", "Augmented")
+run_transfer_network(OBJECT_NAME, "ImageNet", "Augmented")
 # we again omit the inception/wordnet approaches for the augmented images
 
 

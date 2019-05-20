@@ -1,8 +1,0 @@
-approach_name,train_acc,train_f1,test_acc,test_f1
-direct_identification,,,0.79766860949209,0.8528164748637189
-regression_basic,0.871,0.913,0.862,0.904
-regression_wordnet,0.81,0.882,0.795,0.867
-regression_all_feats,0.87,0.913,0.851,0.898
-Lasso_regression,0.87,0.913,0.851,0.898
-Lasso_regression,0.87,0.913,0.851,0.898
-Lasso_regression,0.87,0.913,0.851,0.898

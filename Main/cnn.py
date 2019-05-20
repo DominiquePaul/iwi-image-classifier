@@ -1,8 +1,6 @@
 """
-to do:
-    - go through "train" functions and check whether all parameters are being used
+The module for creating and running a completely custom convolutional neural network
 """
-
 
 import tensorflow as tf
 import numpy as np

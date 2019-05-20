@@ -1,12 +1,8 @@
 """
-find script that already classifies images by loading the labels
-copy necessary files into new folder
-examine possibile measurements of similarity in wordnet
-examine different methods of making sense of independent similarities in the dictionary
-# cross validate approaches
+The module for running direct and indirect label evaluation appproaches
 
 
-similarity scores explained:
+Similarity scores explained:
 https://linguistics.stackexchange.com/questions/9084/what-do-wordnetsimilarity-scores-mean
 
 Other similarities to try:
@@ -30,7 +26,15 @@ from tqdm import tqdm
 
 from os.path import dirname
 import sys
-sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
+
+# option 1 for loading other modules
+# this doesnt work when run in a REPL environment
+main_path = os.path.dirname(__file__)
+module_path = os.path.join(main_path,"modules/" )
+sys.path.append(dirname(module_path))
+
+### an alternative menthod for handling file paths is by using the absolute path ###
+# sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
 
 import inception as inception
 from regressionclass import Logistic_regression, Lasso_regression

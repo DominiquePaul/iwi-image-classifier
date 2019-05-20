@@ -1,9 +1,8 @@
 """
-Adjustments Missing:
-
-If I want the scripts to work together as a whole I should write the Hyper Optimization as
-    a function of some sorts so it can be called from another script. This means rewriting
-    variables as a function parameters
+The script used to perform automated hyperparameter optimisation on a CNN model
+The script is currently configured to run on a cloud server
+For the script to run locally, the data loading method has to be changed (lines 21 to 29)
+Also the 'on_tpu' parameter of the 'train' function in line 47 has to be set to 'None'
 """
 
 import csv
@@ -18,11 +17,16 @@ from preprocessing import join_npy_data
 
 MAX_EVALS = 20
 
+
+### loading the data. Two possible methods:
+
+# For running the script on a local machine
+# data =["../Data/np_files/car_image_package_train_test_split0.npy"]
+# x_train, y_train, x_test, y_test , conversion = join_npy_data(data)
+
+# For running the script on a cloud server machine
 data_url=['gs://data-imr-unisg/np_array_files/car_image_package_train_val_split_0.npy']
 x_train, y_train, x_test, y_test , conversion = join_npy_data(data_url, training_data_only=False)
-
-# data =["/Users/dominiquepaul/xBachelorArbeit/Spring19/Data/np_files/car_image_package_train_test_split0.npy"]
-# x_train, y_train, x_test, y_test , conversion = join_npy_data(data)
 
 
 # File to save first results

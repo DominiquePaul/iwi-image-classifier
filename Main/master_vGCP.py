@@ -1,19 +1,18 @@
 """
+The script for evaluaton of all approaches in one go on a cloud server (!!!). Results are saved as CSVs
+
+
 Data inputs:
-* prop normal
-* prop augmented
+* own data normal
+* own data augmented
 * imagenet normal
 * imagenet augmented
 
 Models:
-* own network (already optimised)
-* transfer learning (already optimised)
-* wordnet approaches (5x)
+* own network (parameters from hyperoptimisation)
+* transfer learning (parameters from hyperoptimisation)
+* label interpretation approaches
 
-
-TODO:
-    * adjust epochs for networks (10000 & 1000)
-    * add timer for each method
 """
 import os
 import sys
@@ -30,7 +29,15 @@ from transfer_learning import Transfer_net
 from label_interpretation import create_feature_df, load_industry_labels, identify_items
 from preprocessing import load_images, read_label_json, return_labelled_images, save_to_numpy_with_labels, save_to_numpy, join_npy_data, augment_data, load_from_gcp
 
-sys.path.append(dirname("/Users/dominiquepaul/classification_tool/Main/modules/"))
+# option 1 for loading other modules
+# this doesnt work when run in a REPL environment
+main_path = os.path.dirname(__file__)
+module_path = os.path.join(main_path,"modules/" )
+sys.path.append(dirname(module_path))
+
+### an alternative menthod for handling file paths is by using the absolute path ###
+# sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
+
 from regressionclass import Logistic_regression, Lasso_regression
 
 EVAL_OUT_FILE = './out_files/master_out_car1.csv'
@@ -38,14 +45,14 @@ PREDICTIONS_MASTER_OUT_FILE = './out_files/master_predictions_car1.csv'
 
 
 ################################################################################
-############################## Some helper function ############################
+############################## Some helper functions ############################
 ################################################################################
 
 
 def write_results_to_csv(x_train, x_test, predictions, run_time, name, object_name, method_type, data_type, augmented):
     accuracy_test = sklearn.metrics.accuracy_score(y_test, predictions)
     f1_score_test = sklearn.metrics.f1_score(y_test, predictions)
-    [TP, FP], [FN, TN] = sklearn.metrics.confusion_matrix(y_test, predictions)
+    TN, FP, FN, TP = sklearn.metrics.confusion_matrix(y_test, predictions).ravel()
 
     # writes out all summarising results to a csv
     with open(EVAL_OUT_FILE, 'a') as csv_file:
@@ -115,7 +122,7 @@ def run_wordnet_indirect_v3(object_name, data_type, augmented):
     # train regression
     lr = Logistic_regression()
     lr.fit(x_train_arr, y_train)
-    lr.find_best_thresh(x_train_arr, y_train, optimize_for="f1", verbose=True)
+    lr.find_best_thresh(x_train_arr, y_train, optimize_for="accuracy", verbose=True)
     y_preds = lr.predict_classes(x_test_arr)
     run_time = timer() - start
     name = "indirect_wordnet_v3_50_labels_{}_{}_{}".format(data_type, augmented, object_name)

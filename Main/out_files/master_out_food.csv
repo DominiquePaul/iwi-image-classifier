@@ -1,0 +1,3 @@
+direct_wordnet_100_labels_custom_Unaugmented_food,food,oob_network_eval,custom,Unaugmented,0,506,125.59708837799553,0.5790513833992095,0.0,0,0,213,293
+indirect_wordnet_v3_50_labels_custom_Unaugmented_food,food,oob_network_eval,custom,Unaugmented,4268,506,1535.1267396149924,0.6857707509881423,0.6327944572748267,137,83,76,210
+indirect_wordnet_lasso_20_labels_custom_Unaugmented_food,food,oob_network_eval,custom,Unaugmented,4268,506,1412.00045224301,0.4209486166007905,0.5924895688456189,213,293,0,0

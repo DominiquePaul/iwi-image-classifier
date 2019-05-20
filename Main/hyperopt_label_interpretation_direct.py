@@ -1,3 +1,7 @@
+"""
+The script used to perform automated hyperparameter optimisation of the direct label evaluation approach
+"""
+
 import csv
 import numpy as np
 from tqdm import tqdm
@@ -20,7 +24,7 @@ OBJECT = "car"
 automotive_pckgs = ["../Data/np_files/car_image_package_train_test_split0.npy"]
 _, _, x_test, y_test, conversion = join_npy_data(automotive_pckgs)
 
-out_file = 'out_files/hyperparameter_opt/wordnet_hyperopt_v1_2_out.csv'
+out_file = 'out_files/hyperparameter_opt/wordnet_hyperopt.csv'
 with open(out_file, 'w') as of_connection:
     writer = csv.writer(of_connection)
     writer.writerow(['approach_name','label_amount','train_acc', 'train_f1', 'test_acc','test_f1', 'TP', 'FP', 'FN', 'TN'])

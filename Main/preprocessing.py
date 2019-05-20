@@ -1,23 +1,16 @@
 """
-Further to do ideas:
-- show_image_function
-- load images from disk without labels (do it with an example)
-- label images by folder from which they are loaded
-
-visualisation:
-- show images_v2
-- show transfer vals
+A script that gathers important functions for processing and managing the data
 
 
-getting images from imagenet:
-    https://medium.com/coinmonks/how-to-get-images-from-imagenet-with-python-in-google-colaboratory-aeef5c1c45e5
-    https://colab.research.google.com/drive/1MALKxRqmNdjBUXJ-6V4PFYU6inPWq7Qe#scrollTo=vVPl9aGooPC9
+Interesting links which were considered for implementation and might be relevant for other users:
+    getting images from imagenet:
+        https://medium.com/coinmonks/how-to-get-images-from-imagenet-with-python-in-google-colaboratory-aeef5c1c45e5
+        https://colab.research.google.com/drive/1MALKxRqmNdjBUXJ-6V4PFYU6inPWq7Qe#scrollTo=vVPl9aGooPC9
 
-for data augmentation:
-    https://github.com/aleju/imgaug
-    https://medium.com/nanonets/how-to-use-deep-learning-when-you-have-limited-data-part-2-data-augmentation-c26971dc8ced
+    for data augmentation:
+        https://github.com/aleju/imgaug
+        https://medium.com/nanonets/how-to-use-deep-learning-when-you-have-limited-data-part-2-data-augmentation-c26971dc8ced
 """
-
 
 
 import os

@@ -1,3 +1,8 @@
+"""
+The module for creating and running a transfer learning network
+"""
+
+
 import os
 import sys
 import numpy as np
@@ -12,13 +17,13 @@ from tensorflow.python import keras
 from tensorflow.python.keras import backend as K
 
 # option 1 for loading other modules
-sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
+# this doesnt work when run in a REPL environment
+main_path = os.path.dirname(__file__)
+module_path = os.path.join(main_path,"modules/" )
+sys.path.append(dirname(module_path))
 
-### an alternative menthod for handling file paths ###
-# main_path = os.path.dirname(__file__) # this doesnt work when run in a REPL environment
-# module_path = os.path.join(main_path,"modules/" )
-# sys.path.append(dirname(module_path))
-
+### an alternative menthod for handling file paths is by using the absolute path ###
+# sys.path.append(dirname("/Users/dominiquepaul/xCoding/classification_tool/Main/modules/"))
 
 from preprocessing import join_npy_data
 import inception
@@ -28,9 +33,6 @@ from inception import transfer_values_cache, transfer_values
 
 inception.maybe_download()
 
-"""
-add a reference for the three functions
-"""
 
 def precision(y_true, y_pred):
     """Precision metric.
@@ -166,15 +168,6 @@ if __name__ == "__main__":
     sklearn.metrics.accuracy_score(y_test, preds)
     sklearn.metrics.f1_score(y_test, preds)
     sklearn.metrics.confusion_matrix(y_test, preds)
-
-
-
-
-
-
-
-
-
 
 
 
